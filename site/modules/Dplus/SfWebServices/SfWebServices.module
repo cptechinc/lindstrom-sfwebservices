@@ -1,0 +1,258 @@
+<?php namespace ProcessWire;
+
+class SfWebServices extends WireData implements Module {
+	const ENDPOINTS = array(
+		'createquote' => 'CreateQuote',
+		'createorderheader' => 'CreateOrderHeader'
+	);
+
+	// Container for endpoint
+	public $endpoint = false;
+
+	// Class object container for various Endpoint extensions
+	public $api = false;
+
+	// Container for SimpleXML object and attributes
+	protected $xml;
+
+	// Enable/disable debugging output
+	protected $debug = false;
+
+	public function debug($debug = false) {
+		$this->debug = false;
+	}
+
+	public function process($endpoint, WireInput $input) {
+		$this->init_endpoint($endpoint);
+
+		if ($this->api['request']->process($input) !== true) {
+			$this->error('Error processing Input');
+			return false;
+		}
+
+		if ($this->api['dplus']->request($this->api['request']->requestdata) !== true) {
+			$this->error('Error sending request to Dplus');
+			return false;
+		}
+
+		if ($this->api['dplus']->response() !== true) {
+			$this->error('Error getting JSON response from Dplus');
+			return false;
+		}
+
+		if ($this->api['response']->process($this->api['dplus']->response) !== true) {
+			$this->error('Error processing JSON response from Dplus');
+			return false;
+		}
+	}
+
+	/**
+	 * Instantiates the Request, Dplus, Response classes for this Service
+	 * @param  string $endpoint Service e.g. createquote
+	 * @return bool
+	 */
+	public function init_endpoint($endpoint) {
+		if ($this->determine_endpoint($endpoint) !== true) {
+			$this->error("Cannot determine WebService for $endpoint");
+			return false;
+		}
+
+		if ($this->setup_class('request') !== true) {
+			$this->error('Cannot instantiate Request class.');
+			return false;
+		}
+
+		if ($this->setup_class('dplus') !== true) {
+			$this->error('Cannot instantiate Dplus Communications class.');
+			return false;
+		}
+
+		if ($this->setup_class('response') !== true) {
+			$this->error('Cannot instantiate Response class.');
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Instantiate a child Endpoint class (Request, Dplus, Response) for later use. Class objects are
+	 * stored in the factory's 'api' class property array.
+	 *
+	 * @param    string    $class          Endpoint class ('request'/'response')
+	 * @return   boolean
+	 */
+	protected function setup_class($class) {
+		// Verify class file details
+		if ($this->setup_class_base($class) !== true) {
+			$this->error('Unable to determine endpoint class details (' . $class . ')');
+			return false;
+		}
+
+		$escaped_namespace = '\ProcessWire\\'.$this->endpoint[$class]['name'];
+
+		if ($this->include_classfile($this->endpoint[$class]['file']) !== true) {
+			$this->error('Unable to find API class file (' . $this->endpoint[$class]['file'] . ')');
+			return false;
+		}
+
+		// start class
+		if (class_exists('\ProcessWire\\'.$this->endpoint[$class]['name']) !== true) {
+			$this->error('API endpoint class is not valid (' . $this->endpoint[$class]['name'] . ')');
+			return false;
+		}
+
+		$ns = __NAMESPACE__.'\\'.$this->endpoint[$class]['name'];
+		$new = new $ns($this->debug);
+		$this->api[$class] = new $ns($this->debug);
+
+		if (empty($this->api[$class]) || !is_object($this->api[$class]) ) {
+			$this->error('Unable to start API endpoint class (' . $this->endpoint[$class]['name'] . ')');
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * If necessary, convert simplified endpoint details into the full array structure, including the
+	 * endpoint class's 'name' and 'file' attributes. See above details for the 'endpoints' class property
+	 * for more information.
+	 *
+	 * @param    string    $class          Endpoint class ('request'/'response')
+	 *
+	 * @return   boolean
+	 */
+	protected function setup_class_base($class) {
+		if (is_string($this->endpoint)) {
+			$this->endpoint = array('basename' => $this->endpoint);
+		}
+
+		if (empty($this->endpoint[$class])) {
+			$this->endpoint[$class] = array();
+		}
+
+		if (empty($this->endpoint[$class]['name']) && !empty($this->endpoint['basename'])) {
+			$this->endpoint[$class]['name'] = rtrim($this->endpoint['basename'], '_') . $this->setup_class_basename($class);
+		}
+
+		if (empty($this->endpoint[$class]['file']) && !empty($this->endpoint['basefile'])) {
+			$this->endpoint[$class]['file'] = $this->endpoint['basefile'];
+		}
+
+		if (empty($this->endpoint[$class]['file']) && !empty($this->endpoint['basename'])) {
+			$this->endpoint[$class]['file'] = 'services/' . $this->endpoint['basename'] . '.class.php';
+		}
+
+		return (!empty($this->endpoint[$class]) && !empty($this->endpoint[$class]['name']) && !empty($this->endpoint[$class]['file']));
+	}
+
+	/**
+	 * Convert an Endpoint class's key value into the appropriate basename postfix.
+	 *
+	 * @param    string    $class          Endpoint class ('request'/'cptech'/'response')
+	 *
+	 * @return   string
+	 */
+	protected function setup_class_basename($class) {
+		$name = $class;
+
+		switch ($class) {
+			case 'request':
+				$name = 'Request';
+				break;
+			case 'dplus':
+				$name = 'Dplus';
+				break;
+			case 'response':
+				$name = 'Response';
+				break;
+		}
+
+		return $name;
+	}
+
+	protected function determine_endpoint($endpoint) {
+		if ($this->endpoint_exists($endpoint)) {
+			$this->endpoint = self::ENDPOINTS[$endpoint];
+			return true;
+		}
+
+		$this->error("Invalid WebService $endpoint");
+		return false;
+	}
+
+	/**
+	 * Returns if Endpoint matches an Endpoint Class Name
+	 * @param  string $endpoint Endpoint Alias or Name (CreateQuote)
+	 * @return bool
+	 */
+	protected function endpoint_exists($endpoint) {
+		return in_array(strtolower($endpoint), array_keys(self::ENDPOINTS));
+	}
+
+	/**
+	 * Throws an error to be logged
+	 * @param  string $error Description of Error
+	 * @param  int    $level What PHP Error Level
+	 * Error constants can be found at
+	 * http://php.net/manual/en/errorfunc.constants.php
+	 */
+	public function error($error, $level = E_USER_ERROR) {
+		$trace = debug_backtrace();
+		$caller = next($trace);
+		$class = get_class($this);
+		$error = (strpos($error, "[$class]: ") !== 0 ? "[$class]: " . $error : $error);
+		$error .= PHP_EOL;
+		$error .= PHP_EOL;
+
+		if (isset($caller['file'])) {
+			$error .= $caller['function'] . " called from " . $caller['file'] . " on line " . $caller['line'];
+		} else {
+			$error .= "";
+		}
+		trigger_error($error, $level);
+		return;
+	}
+
+	/**
+	 * Search for and optionally include a file throughout the current PHP include path. Depending on argument
+	 * settings, if a file is found it can be automatically included or just return TRUE. If a file cannot be
+	 * found, either FALSE with be returned or an error can be triggered if it is required.
+	 *
+	 * @param    string    $file           File name to search for
+	 * @return   bool
+	 */
+	protected function include_classfile($file) {
+		$dir = __DIR__;
+		if (file_exists("$dir/$file")) {
+			include_once("$dir/$file");
+			return true;
+		}
+		$this->error("API endpoint class file not available $file");
+		return false;
+	}
+
+	public function init() {
+		$this->addHookProperty('Page(template=service)::service', function(HookEvent $event) {
+			$page = $event->object;
+			$event->return = $page->name;
+		});
+
+		$this->addHookProperty('Page(template=service-tester)::service', function(HookEvent $event) {
+			$page = $event->object;
+			$event->return = $page->name;
+		});
+	}
+
+	public static function getModuleInfo() {
+		return array(
+			'title' => 'Lindstrom StelFast WebServices',
+			'version' => 101,
+			'summary' => 'Installs Modules needed for WebServices',
+			'singular' => true,
+			'autoload' => true,
+			'installs' => array('CreateQuote')
+		);
+	}
+}

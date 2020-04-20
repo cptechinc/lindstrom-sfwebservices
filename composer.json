@@ -1,0 +1,24 @@
+{
+	"name": "cptechinc/lindstrom-sfwebservices",
+	"type": "library",
+	"description": "Lindstrom Stelfast Web Services",
+	"keywords": [],
+	"license": "MPL-2.0",
+	"homepage": "",
+	"authors": [
+		{
+			"name": "Paul Gomez",
+			"email": "paul@cptechinc.com",
+			"homepage": "https://www.cptechinc.com",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.3.8",
+		"ext-gd": "*",
+		"propel/propel": "~2.0@dev"
+	},
+	"autoload": {
+		"files": [ "wire/core/ProcessWire.php" ]
+	}
+}

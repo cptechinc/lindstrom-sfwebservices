@@ -1,0 +1,126 @@
+<?php namespace ProcessWire;
+
+require_once(__DIR__ . '/../PwPages.module');
+
+/**
+ * class Dpages
+ *
+ * Installs fields, templates, pages necessary for SF webservices
+ */
+class SfWebServicesPages extends PwPages implements Module {
+
+	const FIELDS = array(
+	);
+
+	const TEMPLATES = array(
+		'api' => array(
+			'name'   => 'api',
+			'fields' => array()
+		),
+		'service-tester' => array(
+			'name'   => 'service-tester',
+			'fields' => array()
+		),
+		'service-tester-menu' => array(
+			'name'   => 'service-tester-menu',
+			'fields' => array()
+		),
+		'service' => array(
+			'name'   => 'service',
+			'fields' => array()
+		),
+	);
+
+	const PAGES = array(
+		'api' => array(
+			'template' => 'api',
+			'name'     => 'api',
+			'title'    => 'Services',
+			'summary'  => 'Web Services Menu',
+			'parent'   => '/'
+		),
+		'createquote' => array(
+			'template' => 'service',
+			'name'     => 'createquote',
+			'title'    => 'Create Quote',
+			'summary'  => 'Create Quote',
+			'parent'   => '/api/'
+		),
+		'tests' => array(
+			'template' => 'api',
+			'name'     => 'tests',
+			'title'    => 'Test Web Services',
+			'summary'  => '',
+			'parent'   => '/'
+		),
+		'test-createquote' => array(
+			'template' => 'service-tester',
+			'name'     => 'createquote',
+			'title'    => 'Create Quote',
+			'summary'  => 'Create Quote',
+			'parent'   => '/tests/'
+		),
+		'test-createorderheader' => array(
+			'template' => 'service-tester',
+			'name'     => 'orderheader',
+			'title'    => 'Create Order Header',
+			'summary'  => 'Create Order Header',
+			'parent'   => '/tests/'
+		)
+	);
+
+/* =============================================================
+	ProcessWire Module Functions
+============================================================= */
+	public function init() {
+
+	}
+
+	/**
+	 * ProcessWire Module Info
+	 *
+	 * @return void
+	 */
+	public static function getModuleInfo() {
+		return array(
+			'title' => 'Dpluso Pages Modules',
+			'version' => 101,
+			'summary' => 'Installs and creates Dpluso Pages',
+			'singular' => true,
+			'autoload' => true,
+			'requires' => array('PwPages'),
+			'installs' => array(
+			),
+		);
+	}
+
+	/**
+	 * ProcessWire Installer Function
+	 * NOTE: Runs when installed through ProcessWire
+	 * @return void
+	 */
+	public function ___install() {
+
+	}
+
+	/**
+	 * ProcessWire removal Function
+	 * NOTE: Runs when removed through ProcessWire
+	 * @return void
+	 */
+	public function ___uninstall() {
+
+	}
+
+	public function update() {
+		$info = self::getModuleInfo();
+		$modules = $this->wire('modules');
+		$modules->refresh();
+
+		foreach ($info['installs'] as $module_name) {
+			$modules->install($module_name);
+		}
+
+		parent::update();
+	}
+}

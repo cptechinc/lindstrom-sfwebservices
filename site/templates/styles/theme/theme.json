@@ -1,0 +1,22 @@
+{
+  "name": "Custom",
+  "fonts": {
+    "headings": "Nunito",
+    "base": "Muli"
+  },
+  "vars": {
+    "enable-rounded": false
+  },
+  "desc": "A DIY theme cloned from Greyson.",
+  "colors": {
+    "primary": "#00783e",
+    "secondary": "#3d348b",
+    "success": "#99f7ab",
+    "danger": "#cc330d",
+    "info": "#14213d",
+    "warning": "#fca311",
+    "light": "#eceeec",
+    "dark": "#1e2b37"
+  },
+  "cloned": "Greyson"
+}

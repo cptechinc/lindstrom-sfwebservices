@@ -1,0 +1,11 @@
+<UnitPrice></UnitPrice>
+<ExtPrice></ExtPrice>
+<PriceUOM></PriceUOM>
+<UnitWeight></UnitWeight>
+<ExtendedWeight></ExtendedWeight>
+<BaseQtyUOM></BaseQtyUOM>
+<PackQTY></PackQTY>
+<PiecesPerLB></PiecesPerLB>
+<AvailQTY></AvailQTY>
+<ErrorMessage></ErrorMessage>
+<CreatedDetailLineNumber></CreatedDetailLineNumber>

@@ -1,0 +1,45 @@
+<DataSet>
+	<xs:schema id="NewDataSet">
+		<xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+		</xs:element>
+	</xs:schema>
+	<diffgr:diffgram>
+		<NewDataSet>
+			<Result diffgr:id="Result1" msdata:rowOrder="0" diffgr:hasChanges="inserted">
+				<QuoteID>_</QuoteID>
+				<DivisionID>NJS</DivisionID>
+				<QuoteExpirationDate>_</QuoteExpirationDate>
+				<ShipFromLocation>_</ShipFromLocation>
+				<ProductDescription>1/4-20 Fin Hx Nut Gr2 ZP</ProductDescription>
+				<ProductNumber>AFH2Z0250C</ProductNumber>
+				<RequestQuantity>6000</RequestQuantity>
+				<UnitPrice>5</UnitPrice>
+				<ExtPrice>30</ExtPrice>
+				<PriceUOM>M</PriceUOM>
+				<UnitWeight>7.3</UnitWeight>
+				<ExtendedWeight>43.8</ExtendedWeight>
+				<BaseQtyUOM>EA</BaseQtyUOM>
+				<NextPODate>2019/11/10</NextPODate>
+				<Discontinued>_</Discontinued>
+				<PackQTY>6000</PackQTY>
+				<PiecesPerLB>0</PiecesPerLB>
+				<ErrorMessage/>
+			</Result>
+			<AvailQTY diffgr:id="AvailQTY6" msdata:rowOrder="5">
+				<WHID>LAS</WHID>
+				<QTY>0</QTY>
+				<QTY_PACKAGE_MAX>6000</QTY_PACKAGE_MAX>
+			</AvailQTY>
+			<AvailQTY diffgr:id="AvailQTY7" msdata:rowOrder="6">
+				<WHID>NJS</WHID>
+				<QTY>1344000</QTY>
+				<QTY_PACKAGE_MAX>6000</QTY_PACKAGE_MAX>
+			</AvailQTY>
+			<AvailQTY diffgr:id="AvailQTY8" msdata:rowOrder="7">
+				<WHID>SEA</WHID>
+				<QTY>0</QTY>
+				<QTY_PACKAGE_MAX>6000</QTY_PACKAGE_MAX>
+			</AvailQTY>
+		</NewDataSet>
+	</diffgr:diffgram>
+</DataSet>

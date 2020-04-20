@@ -1,0 +1,45 @@
+{
+	"sessionid": "ulko22grfun8lnqggggog0r0e4",
+	"service": "CREATEQUOTE",
+	"error": false,
+	"message": "",
+	"data": {
+		"quote": {
+			"QuoteID": "_",
+			"DivisionID": "_",
+			"QuoteExpirationDate": "_",
+			"ShipFromLocation": "_",
+			"ProductDescription": "M8X30 6325 m6",
+			"ProductNumber": "DP5008030",
+			"RequestQuantity": 0,
+			"UnitPrice": 22.30000,
+			"ExtPrice": 0.00000,
+			"PriceUOM": "C",
+			"UnitWeight": 0.02600,
+			"ExtendedWeight": 0.00000,
+			"BaseQtyUOM": "EA",
+			"NextPODate": "",
+			"Discontinued": "_",
+			"PackQTY": 25.00000,
+			"Service": "",
+			"PiecesPerLB": 0.00000
+		},
+		"availability": {
+			"1": {
+				"WHID": "00",
+				"QTY": "46588.00",
+				"QTY_PACKAGE_MAX": "25.00"
+			},
+			"2": {
+				"WHID": "01",
+				"QTY": "3595.00",
+				"QTY_PACKAGE_MAX": "25.00"
+			},
+			"3": {
+				"WHID": "02",
+				"QTY": "0.00",
+				"QTY_PACKAGE_MAX": "25.00"
+			}
+		}
+	}
+}

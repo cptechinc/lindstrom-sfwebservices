@@ -1,0 +1,28 @@
+# Processwire Directories
+wire
+site/assets
+
+# Project Configurations
+site/config.php
+/vendor
+test.php
+
+# Twig Cache
+
+# Code Editor Files
+
+# VS Code files
+.vscode
+
+# Atom files
+.ftpconfig
+.ftpignore
+project.cson
+
+
+# DW Dreamweaver added files
+_notes
+_compareTemp
+dwsync.xml
+dw_php_codehinting.config
+*.mno
