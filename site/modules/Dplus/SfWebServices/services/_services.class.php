@@ -319,9 +319,14 @@ abstract class ServiceResponse extends WireData {
 
 		if (!empty($vals['single_tpls'])) {
 			foreach ($vals['single_tpls'] as $tpl_key => $tpl_vals) {
-				$tpl_vals = (empty($tpl_vals) && isset($this->json[$tpl_key]) ? $this->json[$tpl_key] : $tpl_vals);
+				$tpl_vals = (empty($tpl_vals) && isset($this->json['data'][$tpl_key]) ? $this->json['data'][$tpl_key] : $tpl_vals);
 				$tpl = $this->template("$this->xml_dir/" . $this->service_dir . '/' . $tpl_key . '.xml.php');
-				$tpl->set_multi($tpl_vals);
+
+				if ($this->is_multi($tpl_vals)) {
+					$tpl->set_multi($tpl_vals);
+				} else {
+					$tpl->set($tpl_key, $tpl_vals);
+				}
 				$tpls['xml_'.$tpl_key] = $tpl->fetch_template();
 			}
 		}
@@ -359,6 +364,10 @@ abstract class ServiceResponse extends WireData {
 	 */
 	protected function build_xml_addl_vals() {
 		return array();
+	}
+
+	protected function is_multi($array) {
+		return (count($array) != count($array, 1));
 	}
 }
 
