@@ -3,7 +3,8 @@
 class SfWebServices extends WireData implements Module {
 	const ENDPOINTS = array(
 		'createquote' => 'CreateQuote',
-		'createorderheader' => 'CreateOrderHeader'
+		'createorderheader' => 'CreateOrderHeader',
+		'createorderdetail' => 'CreateOrderDetail',
 	);
 
 	// Container for endpoint
