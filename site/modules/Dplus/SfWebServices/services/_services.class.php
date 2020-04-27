@@ -52,6 +52,7 @@ abstract class ServiceRequest extends WireData {
  */
 abstract class ServiceDplus extends WireData {
 	const DIR_RESPONSE_BASE = '/var/www/html/files/json';
+	public $requestarray;
 	public $requestdata;
 
 	// Response JSON string container
@@ -113,14 +114,6 @@ abstract class ServiceDplus extends WireData {
 		}
 	}
 
-	protected function build_response_exception(Exception $e) {
-		$this->response = array(
-			'error' => true,
-			'message' => $e->getMessage(),
-			'service' => strtoupper($this::SERVICE)
-		);
-	}
-
 	/**
 	 * Sends Request to COBOL
 	 * NOTE: Data is further parsed to send more necessary fields
@@ -132,6 +125,7 @@ abstract class ServiceDplus extends WireData {
 			$this->error('Invalid Request');
 			return false;
 		}
+		$this->requestarray = $data;
 
 		$this->create_requestdata($data);
 
