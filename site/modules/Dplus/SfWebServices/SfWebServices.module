@@ -5,6 +5,7 @@ class SfWebServices extends WireData implements Module {
 		'createquote' => 'CreateQuote',
 		'createorderheader' => 'CreateOrderHeader',
 		'createorderdetail' => 'CreateOrderDetail',
+		'createorderend' => 'CreateOrderEnd',
 	);
 
 	// Container for endpoint

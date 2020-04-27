@@ -73,6 +73,13 @@ class SfWebServicesPages extends PwPages implements Module {
 			'title'    => 'Create Order Detail',
 			'summary'  => 'Create Order Detail',
 			'parent'   => '/tests/'
+		),
+		'test-createorderend' => array(
+			'template' => 'service-tester',
+			'name'     => 'createorderend',
+			'title'    => 'Create Order End',
+			'summary'  => 'Create Order End',
+			'parent'   => '/tests/'
 		)
 	);
 
