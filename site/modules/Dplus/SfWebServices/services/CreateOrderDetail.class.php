@@ -4,7 +4,7 @@ require_once('_services.class.php');
 require_once(__DIR__.'/../template.class.php');
 
 class CreateOrderDetailRequest extends ServiceRequest {
-	const REQUEST = 'CREATEORDERHEADER';
+	const REQUEST = 'CREATEORDERDETAIL';
 	const ELEMENTS = array(
 		'customerNumber',
 		'orderNumber',
