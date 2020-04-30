@@ -20,6 +20,10 @@ footer {
 	padding-bottom:200px;
 }
 
+.jumbotron.jumbotron-pagetitle {
+	padding: 2rem 1rem;
+}
+
 
 /**************************************
 	App Styles

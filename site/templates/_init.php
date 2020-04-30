@@ -15,8 +15,10 @@ include_once("./_func.php"); // include our shared functions
 
 $config->styles->append(hash_templatefile('styles/lib/bootstrap-grid.min.css'));
 $config->styles->append(hash_templatefile('styles/theme/theme.css'));
+$config->styles->append(hash_templatefile('styles/lib/font-awesome.css'));
 $config->styles->append(hash_templatefile('styles/main.css'));
 
 $config->scripts->append(hash_templatefile('scripts/lib/jquery.js'));
 $config->scripts->append(hash_templatefile('scripts/lib/popper.js'));
 $config->scripts->append(hash_templatefile('scripts/lib/bootstrap.min.js'));
+$config->scripts->append(hash_templatefile('scripts/lib/jquery-validate.js'));
