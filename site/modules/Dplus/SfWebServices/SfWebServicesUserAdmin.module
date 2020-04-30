@@ -1,0 +1,249 @@
+<?php namespace ProcessWire;
+
+require_once(__DIR__ . '/UserAdminResponse.class.php');
+
+/**
+ * class SfWebServicesUserAdmin
+ *
+ * Handles User Administration
+ */
+class SfWebServicesUserAdmin extends WireData implements Module {
+	const TEMPLATE_USERADMIN = 'user-admin';
+	const ROLE_APIUSER       = 'api-user';
+	const ROLE_APIAUTHORIZED = 'api-authorized';
+
+	public function process_input(WireInput $input) {
+		$rm = strtolower($input->requestMethod());
+
+		switch ($input->$rm->text('action')) {
+			case 'add-user':
+				$this->add_user($input);
+				break;
+			case 'edit-user-authorization':
+				$this->edit_user_authorization($input);
+				break;
+			case 'edit-user-password':
+				$this->edit_user_password($input);
+				break;
+		}
+	}
+
+	/**
+	 * Return if User ID exists
+	 * @param  string $username User Name
+	 * @return bool
+	 */
+	public function user_exists($username) {
+		return boolval($this->wire('users')->find("name=$username")->count());
+	}
+
+	/**
+	 * Returns Users for API
+	 * @return Users
+	 */
+	public function get_apiusers() {
+		$admin = self::TEMPLATE_USERADMIN;
+		$api = self::ROLE_APIUSER;
+		return $this->wire('users')->find("roles=$api, roles!=$admin");
+	}
+
+	/**
+	 * Add API user
+	 * @param  WireInput $input
+	 * @return void
+	 */
+	public function add_user(WireInput $input) {
+		$success = false;
+		$rm = strtolower($input->requestMethod());
+		$username = $input->$rm->name('username');
+
+		$response = new UserAdminResponse();
+		$response->set_action(1);
+
+		if ($this->user_exists($username)) {
+			$response->set_error(true);
+			$response->set_success(false);
+			$response->set_message("User $username Already Exists");
+		} else {
+			$user = new User();
+			$user->name = $username;
+			$user->pass = $input->$rm->name('password');
+			$user->addRole(self::ROLE_APIUSER);
+			$user->addRole(self::ROLE_APIAUTHORIZED);
+			$saved = $user->save();
+			$response->set_error($saved ? false : true);
+			$response->set_success($saved);
+			$msg = "User $username was ";
+			$msg .= $saved ? '' : 'not ';
+			$msg .= "able to be saved";
+			$response->set_message($msg);
+		}
+		$this->wire('session')->useradmin_response = $response;
+
+		if ($response->has_success()) {
+			$this->wire('session')->redirect($this->wire('pages')->get('template=user-admin')->url);
+		} else {
+			$this->wire('session')->redirect($this->get_adduserURL());
+		}
+	}
+
+	/**
+	 * Updates the User's Authorization value
+	 * @param  WireInput $input [description]
+	 * @return void
+	 */
+	public function edit_user_authorization(WireInput $input) {
+		$success = false;
+		$rm = strtolower($input->requestMethod());
+		$username = $input->$rm->name('username');
+
+		$response = new UserAdminResponse();
+		$response->set_action(2);
+
+		if ($this->user_exists($username)) {
+			$user = $this->wire('users')->get("name=$username");
+			$user->of(false);
+			$saved = false;
+
+			if ($input->$rm->text('authorized') == 'Y') {
+				if ($user->hasRole(self::ROLE_APIAUTHORIZED)) {
+					$saved = true;
+				} else {
+					$user->addRole(self::ROLE_APIAUTHORIZED);
+					$saved = $user->save();
+				}
+				$response->set_success($saved);
+				$response->set_error(!$saved);
+
+				if ($saved) {
+					$msg = "User $username is now authorized";
+				} else {
+					$msg = "Unable to authorize User $username";
+				}
+				$response->set_message($msg);
+			} else {
+				if ($user->hasRole(self::ROLE_APIAUTHORIZED)) {
+					$user->removeRole(self::ROLE_APIAUTHORIZED);
+					$saved = $user->save();
+				} else {
+					$saved = true;
+				}
+				$response->set_success($saved);
+				$response->set_error(!$saved);
+
+				if ($saved) {
+					$msg = "User $username is now deauthorized";
+				} else {
+					$msg = "Unable to deauthorize User $username";
+				}
+				$response->set_message($msg);
+			}
+		} else {
+			$response->set_error(true);
+			$response->set_success(false);
+			$response->set_message("User $username does not exist");
+		}
+		$this->wire('session')->useradmin_response = $response;
+
+		if ($response->has_success()) {
+			$this->wire('session')->redirect($this->get_viewuserURL($username));
+		} else {
+			$this->wire('session')->redirect($this->get_viewuserURL($username));
+		}
+	}
+
+	/**
+	 * Updates the User's Password
+	 * @param  WireInput $input
+	 * @return void
+	 */
+	public function edit_user_password(WireInput $input) {
+		$success = false;
+		$rm = strtolower($input->requestMethod());
+		$username = $input->$rm->name('username');
+
+		$response = new UserAdminResponse();
+		$response->set_action(2);
+
+		if ($this->user_exists($username)) {
+			$user = $this->wire('users')->get("name=$username");
+			$user->of(false);
+			$saved = false;
+
+			if ($input->$rm->text('password')) {
+				$password = $input->$rm->text('password');
+				$user->pass = $password;
+				$saved = $user->save();
+				$response->set_success($saved);
+				$response->set_error(!$saved);
+
+				if ($saved) {
+					$msg = "$username's password was changed";
+				} else {
+					$msg = "Unable to change password for $username";
+				}
+				$response->set_message($msg);
+			} else {
+				$response->set_error(true);
+				$response->set_success(false);
+				$response->set_message("Password value for $username is empty");
+			}
+		} else {
+			$response->set_error(true);
+			$response->set_success(false);
+			$response->set_message("User $username does not exist");
+		}
+		$this->wire('session')->useradmin_response = $response;
+
+		if ($response->has_success()) {
+			$this->wire('session')->redirect($this->get_viewuserURL($username));
+		} else {
+			$this->wire('session')->redirect($this->get_viewuserURL($username));
+		}
+	}
+
+	public function get_viewuserURL($userID) {
+		return $this->wire('pages')->get('template=user-admin')->url . "?user=$userID";
+	}
+
+	public function get_adduserURL() {
+		return $this->wire('pages')->get('template=user-admin')->url . "?add=new";
+	}
+/* =============================================================
+	ProcessWire Module Functions
+============================================================= */
+	public function init() {
+		$template = self::TEMPLATE_USERADMIN;
+
+		$this->addHook("Page(template=$template)::view_user", function($event) {
+			$page  = $event->object;
+			$userID = $event->arguments(0);
+			$event->return = $this->get_viewuserURL($userID);
+		});
+
+		$this->addHook("Page(template=$template)::add_user", function($event) {
+			$page  = $event->object;
+			$event->return = $this->get_adduserURL();
+		});
+
+		$this->addHook("User::is_authorized", function($event) {
+			$user  = $event->object;
+			$event->return = $user->hasRole(self::ROLE_APIAUTHORIZED);
+		});
+	}
+
+	/**
+	 * ProcessWire Module Info
+	 *
+	 * @return void
+	 */
+	public static function getModuleInfo() {
+		return array(
+			'title' => 'Sf Webservices User Admin',
+			'version' => 101,
+			'summary' => 'Handles User Administration for Webservices',
+			'singular' => true,
+			'autoload' => true
+		);
+	}
+}

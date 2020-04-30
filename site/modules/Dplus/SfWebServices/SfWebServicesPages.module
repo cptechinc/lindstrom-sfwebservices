@@ -29,9 +29,31 @@ class SfWebServicesPages extends PwPages implements Module {
 			'name'   => 'service',
 			'fields' => array()
 		),
+		'user-admin' => array(
+			'name'   => 'user-admin',
+			'fields' => array()
+		),
+		'login' => array(
+			'name'   => 'login',
+			'fields' => array()
+		),
 	);
 
 	const PAGES = array(
+		'user-admin' => array(
+			'template' => 'user-admin',
+			'name'     => 'users',
+			'title'    => 'User Administration',
+			'summary'  => 'Edit / View Users',
+			'parent'   => '/'
+		),
+		'login' => array(
+			'template' => 'login',
+			'name'     => 'login',
+			'title'    => 'Login',
+			'summary'  => 'Login / Logout',
+			'parent'   => '/'
+		),
 		'api' => array(
 			'template' => 'api',
 			'name'     => 'api',
@@ -44,6 +66,27 @@ class SfWebServicesPages extends PwPages implements Module {
 			'name'     => 'createquote',
 			'title'    => 'Create Quote',
 			'summary'  => 'Create Quote',
+			'parent'   => '/api/'
+		),
+		'createorderheader' => array(
+			'template' => 'service',
+			'name'     => 'createorderheader',
+			'title'    => 'Create Order Header',
+			'summary'  => 'Create Order Header',
+			'parent'   => '/api/'
+		),
+		'createorderdetail' => array(
+			'template' => 'service',
+			'name'     => 'createorderdetail',
+			'title'    => 'Create Order Detail',
+			'summary'  => 'Create Order Detail',
+			'parent'   => '/api/'
+		),
+		'createorderend' => array(
+			'template' => 'service',
+			'name'     => 'createorderend',
+			'title'    => 'Create Order End',
+			'summary'  => 'Create Order End',
 			'parent'   => '/api/'
 		),
 		'tests' => array(
@@ -87,7 +130,10 @@ class SfWebServicesPages extends PwPages implements Module {
 	ProcessWire Module Functions
 ============================================================= */
 	public function init() {
-
+		$this->addHook("Pages::logoutURL", function($event) {
+			$pages  = $event->object;
+			$event->return = $pages->get('template=login')->url."?logout=y";
+		});
 	}
 
 	/**
