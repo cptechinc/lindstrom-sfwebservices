@@ -16,7 +16,6 @@ class CreateQuoteRequest extends ServiceRequest {
 	);
 	public $requestdata = array();
 	protected $debug = false;
-
 }
 
 class CreateQuoteDplus extends ServiceDplus {
@@ -47,6 +46,21 @@ class CreateQuoteDplus extends ServiceDplus {
 			$this->response['data']['quote']['message'] = $this->response['message'];
 		}
 		return $result;
+	}
+
+	public function error_response($message) {
+		return array(
+			"sessionid" => session_id(),
+			"service" => strtoupper(self::SERVICE),
+			"error" => true,
+			"message" => $message,
+			'data' => array(
+				'quote' => array(
+					'error' => true,
+					'message' => $message
+				)
+			)
+		);
 	}
 }
 
