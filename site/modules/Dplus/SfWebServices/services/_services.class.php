@@ -115,6 +115,20 @@ abstract class ServiceDplus extends WireData {
 	}
 
 	/**
+	 * Returns Error Response Array
+	 * @param  string $message Error Message
+	 * @return array
+	 */
+	public function error_response($message) {
+		return array(
+			"sessionid" => session_id(),
+			"service" => strtoupper($this::SERVICE),
+			"error" => true,
+			"message" => $message
+		);
+	}
+
+	/**
 	 * Sends Request to COBOL
 	 * NOTE: Data is further parsed to send more necessary fields
 	 * @param  array  $data Key Value array to be sent in flat file
