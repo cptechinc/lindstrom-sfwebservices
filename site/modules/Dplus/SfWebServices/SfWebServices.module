@@ -20,31 +20,42 @@ class SfWebServices extends WireData implements Module {
 	// Enable/disable debugging output
 	protected $debug = false;
 
+	// Class for authenticating API Credentials
+	protected $auththenticator = false;
+
 	public function debug($debug = false) {
 		$this->debug = false;
 	}
 
 	public function process($endpoint, WireInput $input) {
+		$this->authenticator = $this->wire('modules')->get('UserAuthenticator');
 		$this->init_endpoint($endpoint);
 
-		if ($this->api['request']->process($input) !== true) {
-			$this->error('Error processing Input');
-			return false;
-		}
+		if ($this->authenticator->authenticate_input($input)) {
+			if ($this->api['request']->process($input) !== true) {
+				$this->error('Error processing Input');
+				return false;
+			}
 
-		if ($this->api['dplus']->request($this->api['request']->requestdata) !== true) {
-			$this->error('Error sending request to Dplus');
-			return false;
-		}
+			if ($this->api['dplus']->request($this->api['request']->requestdata) !== true) {
+				$this->error('Error sending request to Dplus');
+				return false;
+			}
 
-		if ($this->api['dplus']->response() !== true) {
-			$this->error('Error getting JSON response from Dplus');
-			return false;
-		}
+			if ($this->api['dplus']->response() !== true) {
+				$this->error('Error getting JSON response from Dplus');
+				return false;
+			}
 
-		if ($this->api['response']->process($this->api['dplus']->response) !== true) {
-			$this->error('Error processing JSON response from Dplus');
-			return false;
+			if ($this->api['response']->process($this->api['dplus']->response) !== true) {
+				$this->error('Error processing JSON response from Dplus');
+				return false;
+			}
+		} else {
+			if ($this->api['response']->process($this->api['dplus']->error_response($this->authenticator->message)) !== true) {
+				$this->error('Error processing JSON response from Dplus');
+				return false;
+			}
 		}
 	}
 
@@ -254,7 +265,11 @@ class SfWebServices extends WireData implements Module {
 			'summary' => 'Installs Modules needed for WebServices',
 			'singular' => true,
 			'autoload' => true,
-			'installs' => array('CreateQuote')
+			'installs' => array(
+				'SfWebSErvicesPages',
+				'SfWebSErvicesUserAdmin',
+				'SfWebSErvicesUserAuthentication',
+			)
 		);
 	}
 }
