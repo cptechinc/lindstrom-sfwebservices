@@ -8,6 +8,22 @@
 			<th>Param</th>
 			<th>Value</th>
 		</tr>
+		<tr>
+			<td>
+				<label for="IDCLogin">IDCLogin</label>
+			</td>
+			<td>
+				<input type="text" class="form-control" name="IDCLogin" id="IDCLogin" aria-describedby="IDCLogin">
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<label for="IDCPassword">IDCPassword</label>
+			</td>
+			<td>
+				<input type="text" class="form-control" name="IDCPassword" id="IDCPassword" aria-describedby="IDCPassword">
+			</td>
+		</tr>
 		<?php foreach ($endpoint->get_fields() as $fieldname) : ?>
 			<tr>
 				<td>

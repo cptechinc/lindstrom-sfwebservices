@@ -43,6 +43,12 @@
 							<label class="custom-control-label" for="authorized">Authorize?</label>
 						</div>
 					</div>
+					<div class="form-group">
+						<div class="custom-control custom-checkbox">
+							<input type="checkbox" class="custom-control-input" name="production" id="production" value="Y" <?= $user->use_production() ? 'checked' : '' ; ?>>
+							<label class="custom-control-label" for="production">Send Requests to Production?</label>
+						</div>
+					</div>
 					<button type="submit" class="btn btn-success">
 						<i class="fa fa-floppy-o"aria-hidden="true"></i> Save
 					</button>

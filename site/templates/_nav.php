@@ -4,7 +4,7 @@
 	$apitest  = $pages->get('template=api, name=tests');
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-	<a class="navbar-brand" href="#"><?= $homepage->headline; ?></a>
+	<a class="navbar-brand" href="<?= $homepage->url; ?>"><?= $homepage->headline; ?></a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-navigation" aria-controls="navbar-navigation" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
 	</button>
