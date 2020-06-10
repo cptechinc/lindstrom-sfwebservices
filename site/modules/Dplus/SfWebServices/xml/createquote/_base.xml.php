@@ -43,7 +43,7 @@
 		</xs:element>
 	</xs:schema>
 	<diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
-		<NewDataSet>
+		<NewDataSet xmlns="">
 			<Result diffgr:id="Result1" msdata:rowOrder="0" diffgr:hasChanges="inserted">
 				<?php if (!$error) : ?>
 					<?= $xml_header; ?>
