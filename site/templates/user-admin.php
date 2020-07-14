@@ -13,10 +13,16 @@
 			$admin->process_input($input);
 		}
 
-		if ($session->useradmin_response) {
-			$page->body .= render_php("{$config->paths->templates}inc/user-admin/response.php", $args = array('page' => $page, 'config' => $config, 'response' => $session->useradmin_response));
+		if ($session->useradmin_response_auth) {
+			$page->body .= render_php("{$config->paths->templates}inc/user-admin/response.php", $args = array('page' => $page, 'config' => $config, 'response' => $session->useradmin_response_auth));
 			$page->body .= $html->div('class=mb-3');
-			$session->remove('useradmin_response');
+			$session->remove('useradmin_response_auth');
+		}
+
+		if ($session->useradmin_response_production) {
+			$page->body .= render_php("{$config->paths->templates}inc/user-admin/response.php", $args = array('page' => $page, 'config' => $config, 'response' => $session->useradmin_response_production));
+			$page->body .= $html->div('class=mb-3');
+			$session->remove('useradmin_response_production');
 		}
 
 		if ($input->get->user) {
