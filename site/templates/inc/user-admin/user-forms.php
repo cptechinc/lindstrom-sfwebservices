@@ -3,10 +3,13 @@
 		$$variable = $value;
 	}
 ?>
-<div class="row">
-	<div class="col-sm-6">
-		<div class="card">
-			<div class="card-body">
+<div class="card">
+	<div class="card-header">
+		User: <?= $user->name; ?>
+	</div>
+	<div class="card-body">
+		<div class="row">
+			<div class="col-sm-6 border-right border-dark">
 				<h4 class="card-title">Edit Password</h4>
 				<form action="<?= $page->url; ?>" class="mb-3" id="edit-user-password-form" method="POST">
 					<input type="hidden" name="action" value="edit-user-password">
@@ -24,11 +27,7 @@
 					</button>
 				</form>
 			</div>
-		</div>
-	</div>
-	<div class="col-sm-6">
-		<div class="card">
-			<div class="card-body">
+			<div class="col-sm-6">
 				<h4 class="card-title">Edit Authorization</h4>
 				<form action="<?= $page->url; ?>" id="edit-user-authorization-form" method="POST">
 					<input type="hidden" name="action" value="edit-user-authorization">
@@ -55,6 +54,15 @@
 				</form>
 			</div>
 		</div>
-
+	</div>
+	<div class="card-footer text-right">
+		<form action="<?= $page->url; ?>" method="POST">
+			<input type="hidden" name="action" value="delete-user">
+			<input type="hidden" name="username" value="<?= $user->name; ?>">
+			
+			<button type="submit" class="btn btn-danger">
+				<i class="fa fa-trash" aria-hidden="true"></i> Delete
+			</button>
+		</form>
 	</div>
 </div>
