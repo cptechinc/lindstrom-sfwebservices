@@ -6,7 +6,7 @@
 					&copy; <?= date('Y'); ?> <?= $appconfig->company_name; ?>
 				</div>
 				<div class="col-sm-4">
-					<strong class="text-white">User: <?= $user->loginid; ?></strong> <br>
+					<strong class="text-white">User: <?= $user->name; ?></strong> <br>
 					<strong class="text-white">Session ID: <?= session_id(); ?></strong>
 				</div>
 				<div class="col-sm-4"></div>
