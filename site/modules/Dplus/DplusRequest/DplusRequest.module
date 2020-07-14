@@ -8,6 +8,7 @@
 class DplusRequest extends WireData implements Module {
 	const DIR_FILES = '/usr/capsys/webserv/';
 	const CGI = 'SFWEBSERVICE';
+	const CGI_TEST = 'SFWEBSERVICETEST';
 
 	public static function getModuleInfo() {
 		return array(
@@ -25,7 +26,7 @@ class DplusRequest extends WireData implements Module {
 	 * @return bool
 	 */
 	public function cgi_request($sessionID) {
-		$cgi = self::CGI;
+		$cgi = $this->wire('user')->use_production() ? self::CGI : self::CGI_TEST;
 		$http = new WireHttp();
 		$response = $http->get("127.0.0.1/cgi-bin/$cgi?fname=$sessionID");
 		return $response !== false;
