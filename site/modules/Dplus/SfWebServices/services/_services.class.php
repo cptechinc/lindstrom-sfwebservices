@@ -52,6 +52,9 @@ abstract class ServiceRequest extends WireData {
  */
 abstract class ServiceDplus extends WireData {
 	const DIR_RESPONSE_BASE = '/var/www/html/files/json';
+	const COMPANY_LIVE = 1;
+	const COMPANY_SANDBOX = 4;
+
 	public $requestarray;
 	public $requestdata;
 
@@ -60,8 +63,9 @@ abstract class ServiceDplus extends WireData {
 	public $response = array();
 
 	public function __construct($debug = false) {
+		$companynbr = $this->wire('user')->use_production() ? self::COMPANY_LIVE : self::COMPANY_SANDBOX;
 		$this->debug = $debug;
-		$this->dir = self::DIR_RESPONSE_BASE.$this->wire('config')->companynbr.'/';
+		$this->dir = self::DIR_RESPONSE_BASE . $companynbr . '/';
 	}
 
 	/**
@@ -99,17 +103,17 @@ abstract class ServiceDplus extends WireData {
 			$this->response = json_decode(file_get_contents($filepath), true);
 
 			if (empty($this->response)) {
-				$this->error("The JSON Response contains errors, JSON ERROR: ". json_last_error());
+				// $this->error("The JSON Response contains errors, JSON ERROR: ". json_last_error());
 				return false;
 			} else {
 				if ($this->response['service'] !== strtoupper($this::BASE_FILE)) {
-					$this->error("Response JSON does not match service");
+					// $this->error("Response JSON does not match service");
 					return false;
 				}
 			}
 			return true;
 		} else {
-			$this->error("Response JSON does not exist");
+			//$this->error("Response JSON does not exist");
 			return false;
 		}
 	}
@@ -136,7 +140,7 @@ abstract class ServiceDplus extends WireData {
 	 */
 	public function request(array $data) {;
 		if ($this->validate_request($data) !== true) {
-			$this->error('Invalid Request');
+			// $this->error('Invalid Request');
 			return false;
 		}
 		$this->requestarray = $data;
@@ -144,7 +148,7 @@ abstract class ServiceDplus extends WireData {
 		$this->create_requestdata($data);
 
 		if ($this->send_request() !== true) {
-			$this->error('Request could not be made');
+			// $this->error('Request could not be made');
 			return false;
 		}
 		return true;
@@ -157,7 +161,7 @@ abstract class ServiceDplus extends WireData {
 	 */
 	protected function validate_request(array $data) {
 		if ($this::ELEMENTS !== array_keys($data)) {
-			$this->error('Request is for another service');
+			// $this->error('Request is for another service');
 			return false;
 		}
 		return true;
@@ -189,12 +193,12 @@ abstract class ServiceDplus extends WireData {
 		$requestor = $this->wire('modules')->get('DplusRequest');
 
 		if ($requestor->write_dplusfile($this->requestdata, session_id()) !== true) {
-			$this->error('Request file could not be written');
+			// $this->error('Request file could not be written');
 			return false;
 		}
 
 		if ($requestor->cgi_request(session_id()) !== true) {
-			$this->error('Failed sending request');
+			// $this->error('Failed sending request');
 			return false;
 		}
 		return true;
@@ -242,12 +246,12 @@ abstract class ServiceResponse extends WireData {
 		$this->json = $json;
 
 		if ($this->validate() !== true) {
-			$this->error('Returned values are not valid');
+			// $this->error('Returned values are not valid');
 			return false;
 		}
 
 		if ($this->build_xml() !== true) {
-			$this->error('Unable to create response XML file');
+			// $this->error('Unable to create response XML file');
 			return false;
 		}
 		return true;
@@ -267,7 +271,7 @@ abstract class ServiceResponse extends WireData {
 	 */
 	public function validate() {
 		if (strtoupper($this->json['service']) !== strtoupper($this::SERVICE)) {
-			$this->error('Response is for the wrong service');
+			// $this->error('Response is for the wrong service');
 			return false;
 		}
 		return true;
