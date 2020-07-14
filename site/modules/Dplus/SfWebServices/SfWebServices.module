@@ -29,31 +29,32 @@ class SfWebServices extends WireData implements Module {
 
 	public function process($endpoint, WireInput $input) {
 		$this->authenticator = $this->wire('modules')->get('UserAuthenticator');
-		$this->init_endpoint($endpoint);
 
 		if ($this->authenticator->authenticate_input($input)) {
+
+			$this->init_endpoint($endpoint);
 			if ($this->api['request']->process($input) !== true) {
-				$this->error('Error processing Input');
+				// $this->error('Error processing Input');
 				return false;
 			}
 
 			if ($this->api['dplus']->request($this->api['request']->requestdata) !== true) {
-				$this->error('Error sending request to Dplus');
+				// $this->error('Error sending request to Dplus');
 				return false;
 			}
 
 			if ($this->api['dplus']->response() !== true) {
-				$this->error('Error getting JSON response from Dplus');
+				// $this->error('Error getting JSON response from Dplus');
 				return false;
 			}
 
 			if ($this->api['response']->process($this->api['dplus']->response) !== true) {
-				$this->error('Error processing JSON response from Dplus');
+				// $this->error('Error processing JSON response from Dplus');
 				return false;
 			}
 		} else {
 			if ($this->api['response']->process($this->api['dplus']->error_response($this->authenticator->message)) !== true) {
-				$this->error('Error processing JSON response from Dplus');
+				// $this->error('Error processing JSON response from Dplus');
 				return false;
 			}
 		}
@@ -66,22 +67,22 @@ class SfWebServices extends WireData implements Module {
 	 */
 	public function init_endpoint($endpoint) {
 		if ($this->determine_endpoint($endpoint) !== true) {
-			$this->error("Cannot determine WebService for $endpoint");
+			// $this->error("Cannot determine WebService for $endpoint");
 			return false;
 		}
 
 		if ($this->setup_class('request') !== true) {
-			$this->error('Cannot instantiate Request class.');
+			// $this->error('Cannot instantiate Request class.');
 			return false;
 		}
 
 		if ($this->setup_class('dplus') !== true) {
-			$this->error('Cannot instantiate Dplus Communications class.');
+			// $this->error('Cannot instantiate Dplus Communications class.');
 			return false;
 		}
 
 		if ($this->setup_class('response') !== true) {
-			$this->error('Cannot instantiate Response class.');
+			// $this->error('Cannot instantiate Response class.');
 			return false;
 		}
 
@@ -98,20 +99,20 @@ class SfWebServices extends WireData implements Module {
 	protected function setup_class($class) {
 		// Verify class file details
 		if ($this->setup_class_base($class) !== true) {
-			$this->error('Unable to determine endpoint class details (' . $class . ')');
+			// $this->error('Unable to determine endpoint class details (' . $class . ')');
 			return false;
 		}
 
 		$escaped_namespace = '\ProcessWire\\'.$this->endpoint[$class]['name'];
 
 		if ($this->include_classfile($this->endpoint[$class]['file']) !== true) {
-			$this->error('Unable to find API class file (' . $this->endpoint[$class]['file'] . ')');
+			// $this->error('Unable to find API class file (' . $this->endpoint[$class]['file'] . ')');
 			return false;
 		}
 
 		// start class
 		if (class_exists('\ProcessWire\\'.$this->endpoint[$class]['name']) !== true) {
-			$this->error('API endpoint class is not valid (' . $this->endpoint[$class]['name'] . ')');
+			// $this->error('API endpoint class is not valid (' . $this->endpoint[$class]['name'] . ')');
 			return false;
 		}
 
@@ -120,7 +121,7 @@ class SfWebServices extends WireData implements Module {
 		$this->api[$class] = new $ns($this->debug);
 
 		if (empty($this->api[$class]) || !is_object($this->api[$class]) ) {
-			$this->error('Unable to start API endpoint class (' . $this->endpoint[$class]['name'] . ')');
+			// $this->error('Unable to start API endpoint class (' . $this->endpoint[$class]['name'] . ')');
 			return false;
 		}
 
@@ -191,7 +192,7 @@ class SfWebServices extends WireData implements Module {
 			return true;
 		}
 
-		$this->error("Invalid WebService $endpoint");
+		// $this->error("Invalid WebService $endpoint");
 		return false;
 	}
 
@@ -242,7 +243,7 @@ class SfWebServices extends WireData implements Module {
 			include_once("$dir/$file");
 			return true;
 		}
-		$this->error("API endpoint class file not available $file");
+		// $this->error("API endpoint class file not available $file");
 		return false;
 	}
 
