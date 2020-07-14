@@ -11,6 +11,7 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 	const TEMPLATE_USERADMIN = 'user-admin';
 	const ROLE_APIUSER       = 'api-user';
 	const ROLE_APIAUTHORIZED = 'api-authorized';
+	const ROLE_APIPRODUCTION = 'api-production';
 
 	public function process_input(WireInput $input) {
 		$rm = strtolower($input->requestMethod());
@@ -20,10 +21,13 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 				$this->add_user($input);
 				break;
 			case 'edit-user-authorization':
-				$this->edit_user_authorization($input);
+				$this->edit_user_authorizations($input);
 				break;
 			case 'edit-user-password':
 				$this->edit_user_password($input);
+				break;
+			case 'delete-user':
+				$this->delete_user($input);
 				break;
 		}
 	}
@@ -88,68 +92,166 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 	}
 
 	/**
-	 * Updates the User's Authorization value
-	 * @param  WireInput $input [description]
+	 * Delete API user
+	 * @param  WireInput $input
 	 * @return void
 	 */
-	public function edit_user_authorization(WireInput $input) {
+	public function delete_user(WireInput $input) {
 		$success = false;
 		$rm = strtolower($input->requestMethod());
 		$username = $input->$rm->name('username');
 
 		$response = new UserAdminResponse();
-		$response->set_action(2);
+		$response->set_action(1);
 
 		if ($this->user_exists($username)) {
 			$user = $this->wire('users')->get("name=$username");
-			$user->of(false);
-			$saved = false;
-
-			if ($input->$rm->text('authorized') == 'Y') {
-				if ($user->hasRole(self::ROLE_APIAUTHORIZED)) {
-					$saved = true;
-				} else {
-					$user->addRole(self::ROLE_APIAUTHORIZED);
-					$saved = $user->save();
-				}
-				$response->set_success($saved);
-				$response->set_error(!$saved);
-
-				if ($saved) {
-					$msg = "User $username is now authorized";
-				} else {
-					$msg = "Unable to authorize User $username";
-				}
-				$response->set_message($msg);
-			} else {
-				if ($user->hasRole(self::ROLE_APIAUTHORIZED)) {
-					$user->removeRole(self::ROLE_APIAUTHORIZED);
-					$saved = $user->save();
-				} else {
-					$saved = true;
-				}
-				$response->set_success($saved);
-				$response->set_error(!$saved);
-
-				if ($saved) {
-					$msg = "User $username is now deauthorized";
-				} else {
-					$msg = "Unable to deauthorize User $username";
-				}
-				$response->set_message($msg);
-			}
+			$saved = $user->delete();
+			$response->set_error($saved ? false : true);
+			$response->set_success($saved);
+			$msg = "User $username was ";
+			$msg .= $saved ? '' : 'not ';
+			$msg .= " deleted";
+			$response->set_message($msg);
 		} else {
-			$response->set_error(true);
-			$response->set_success(false);
-			$response->set_message("User $username does not exist");
+			$response->set_error(false);
+			$response->set_success(true);
+			$response->set_message("User $username was deleted");
+
+
 		}
 		$this->wire('session')->useradmin_response = $response;
 
 		if ($response->has_success()) {
-			$this->wire('session')->redirect($this->get_viewuserURL($username));
+			$this->wire('session')->redirect($this->wire('pages')->get('template=user-admin')->url);
 		} else {
-			$this->wire('session')->redirect($this->get_viewuserURL($username));
+			$this->wire('session')->redirect($this->get_adduserURL());
 		}
+	}
+
+	public function edit_user_authorizations(WireInput $input) {
+		$rm = strtolower($input->requestMethod());
+		$values = $input->$rm;
+		$username = $values->name('username');
+
+		if ($this->user_exists($username)) {
+			$user = $this->wire('users')->get("name=$username");
+			$this->wire('session')->useradmin_response_auth = $this->edit_user_authorization($user, $input);
+			$this->wire('session')->useradmin_response_production = $this->edit_user_production($user, $input);
+		} else {
+			$response = new UserAdminResponse();
+			$response->set_action(2);
+			$response->set_error(true);
+			$response->set_success(false);
+			$response->set_message("User $username does not exist");
+			$this->wire('session')->useradmin_response_auth = $response;
+		}
+
+		$this->wire('session')->redirect($this->get_viewuserURL($username));
+	}
+
+
+
+	/**
+	 * Updates the User's Authorization value
+	 * @param  WireInput $input
+	 * @return void
+	 */
+	public function edit_user_authorization(User $user, WireInput $input) {
+		$saved = false;
+		$rm = strtolower($input->requestMethod());
+		$values = $input->$rm;
+
+		$response = new UserAdminResponse();
+		$response->set_action(2);
+
+		$user->of(false);
+
+		if ($values->text('authorized') == 'Y') {
+			if ($user->hasRole(self::ROLE_APIAUTHORIZED)) {
+				$saved = true;
+			} else {
+				$user->addRole(self::ROLE_APIAUTHORIZED);
+				$saved = $user->save();
+			}
+			$response->set_success($saved);
+			$response->set_error(!$saved);
+
+			if ($saved) {
+				$msg = "User $username is now authorized";
+			} else {
+				$msg = "Unable to authorize User $username";
+			}
+			$response->set_message($msg);
+		} else {
+			if ($user->hasRole(self::ROLE_APIAUTHORIZED)) {
+				$user->removeRole(self::ROLE_APIAUTHORIZED);
+				$saved = $user->save();
+			} else {
+				$saved = true;
+			}
+			$response->set_success($saved);
+			$response->set_error(!$saved);
+
+			if ($saved) {
+				$msg = "User $username is now deauthorized";
+			} else {
+				$msg = "Unable to deauthorize User $username";
+			}
+			$response->set_message($msg);
+		}
+		return $response;
+	}
+
+	/**
+	 * Updates the User's Production Flag
+	 * @param  WireInput $input
+	 * @return void
+	 */
+	public function edit_user_production(User $user, WireInput $input) {
+		$saved = false;
+		$rm = strtolower($input->requestMethod());
+		$values = $input->$rm;
+
+		$response = new UserAdminResponse();
+		$response->set_action(2);
+
+		$user->of(false);
+
+		if ($values->text('production') == 'Y') {
+			if ($user->hasRole(self::ROLE_APIPRODUCTION)) {
+				$saved = true;
+			} else {
+				$user->addRole(self::ROLE_APIPRODUCTION);
+				$saved = $user->save();
+			}
+			$response->set_success($saved);
+			$response->set_error(!$saved);
+
+			if ($saved) {
+				$msg = "User $username is now a Production User";
+			} else {
+				$msg = "Unable to set User $username as Production User";
+			}
+			$response->set_message($msg);
+		} else {
+			if ($user->hasRole(self::ROLE_APIPRODUCTION)) {
+				$user->removeRole(self::ROLE_APIPRODUCTION);
+				$saved = $user->save();
+			} else {
+				$saved = true;
+			}
+			$response->set_success($saved);
+			$response->set_error(!$saved);
+
+			if ($saved) {
+				$msg = "User $username is now a Sandbox User";
+			} else {
+				$msg = "Unable to Sandbox User $username";
+			}
+			$response->set_message($msg);
+		}
+		return $response;
 	}
 
 	/**
@@ -229,6 +331,11 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		$this->addHook("User::is_authorized", function($event) {
 			$user  = $event->object;
 			$event->return = $user->hasRole(self::ROLE_APIAUTHORIZED);
+		});
+
+		$this->addHook("User::use_production", function($event) {
+			$user  = $event->object;
+			$event->return = $user->hasRole(self::ROLE_APIPRODUCTION);
 		});
 	}
 
