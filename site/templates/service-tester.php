@@ -1,7 +1,8 @@
 <?php
 	$factory = $modules->get('SfWebServices');
+	$rm = strtolower($input->requestMethod());
 
-	if ($input->requestMethod('POST')) {
+	if ($input->$rm->text('IDCLogin')) {
 		header ("Content-Type:text/xml");
 		$factory->process($page->service, $input);
 		echo $factory->api['response']->get_xml();
