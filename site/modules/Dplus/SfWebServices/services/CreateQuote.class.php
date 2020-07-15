@@ -58,7 +58,8 @@ class CreateQuoteDplus extends ServiceDplus {
 				'quote' => array(
 					'error' => true,
 					'message' => $message
-				)
+				),
+				'availability' => false
 			)
 		);
 	}
