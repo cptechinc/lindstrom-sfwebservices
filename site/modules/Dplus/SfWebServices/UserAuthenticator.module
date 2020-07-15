@@ -8,6 +8,7 @@
 class UserAuthenticator extends WireData implements Module {
 	const FIELD_USERNAME = 'IDCLogin';
 	const FIELD_PASSWORD = 'IDCPassword';
+	const FIELD_CUSTOMER = 'customerNumber';
 
 	public function __construct() {
 		$this->authenticated = false;
@@ -17,9 +18,9 @@ class UserAuthenticator extends WireData implements Module {
 	}
 
 	/**
-	 * [authenticate_input description]
+	 * Authenticates User Input
 	 * @param  WireInput $input [description]
-	 * @return [type]           [description]
+	 * @return bool
 	 */
 	public function authenticate_input(WireInput $input) {
 		$rm = strtolower($input->requestMethod());
@@ -30,7 +31,7 @@ class UserAuthenticator extends WireData implements Module {
 			$this->error         = true;
 		} else {
 			$this->username = $values->text(self::FIELD_USERNAME);
-			$this->authenticated  = $this->authenticate_user($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_PASSWORD));
+			$this->authenticated = $this->authenticate_user($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_PASSWORD), $values->text(self::FIELD_CUSTOMER));
 			$this->error = !$this->authenticated;
 		}
 
@@ -40,16 +41,18 @@ class UserAuthenticator extends WireData implements Module {
 		return $this->authenticated;
 	}
 
-	public function authenticate_user($username, $password) {
+	public function authenticate_user($username, $password, $customerNumber) {
 		if ($this->wire('users')->find("name=$username")->count()) {
 			$user = $this->wire('users')->get("name=$username");
 
 			if ($user->hasRole(SfWebServicesUserAdmin::ROLE_APIAUTHORIZED)) {
-				if ($user->id == $this->wire('user')->id) {
-					return true;
-				} else {
-					if ($this->wire('session')->login($username, $password)) {
+				if ($user->customerNumber == $customerNumber) {
+					if ($user->id == $this->wire('user')->id) {
 						return true;
+					} else {
+						if ($this->wire('session')->login($username, $password)) {
+							return true;
+						}
 					}
 				}
 			}

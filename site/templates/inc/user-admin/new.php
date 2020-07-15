@@ -9,5 +9,9 @@
 		<label for="password">Password</label>
 		<input type="password" class="form-control" id="password" name="password" value="">
 	</div>
+	<div class="form-group">
+		<label for="customerNumber">customerNumber</label>
+		<input type="customerNumber" class="form-control" id="customerNumber" name="customerNumber" value="">
+	</div>
 	<button type="submit" class="btn btn-success">Create</button>
 </form>

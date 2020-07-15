@@ -37,6 +37,10 @@
 						<input type="text" class="form-control-plaintext" id="username" name="username" value="<?= $user->name; ?>" readonly>
 					</div>
 					<div class="form-group">
+						<label for="customerNumber">customerNumber</label>
+						<input type="customerNumber" class="form-control" id="customerNumber" name="customerNumber" value="<?= $user->customerNumber; ?>">
+					</div>
+					<div class="form-group">
 						<div class="custom-control custom-checkbox">
 							<input type="checkbox" class="custom-control-input" name="authorized" id="authorized" value="Y" <?= $user->is_authorized() ? 'checked' : '' ; ?>>
 							<label class="custom-control-label" for="authorized">Authorize?</label>
@@ -59,7 +63,7 @@
 		<form action="<?= $page->url; ?>" method="POST">
 			<input type="hidden" name="action" value="delete-user">
 			<input type="hidden" name="username" value="<?= $user->name; ?>">
-			
+
 			<button type="submit" class="btn btn-danger">
 				<i class="fa fa-trash" aria-hidden="true"></i> Delete
 			</button>

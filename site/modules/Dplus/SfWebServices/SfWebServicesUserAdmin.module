@@ -59,7 +59,8 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 	public function add_user(WireInput $input) {
 		$success = false;
 		$rm = strtolower($input->requestMethod());
-		$username = $input->$rm->name('username');
+		$values = $input->$rm;
+		$username = $values->name('username');
 
 		$response = new UserAdminResponse();
 		$response->set_action(1);
@@ -71,7 +72,8 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		} else {
 			$user = new User();
 			$user->name = $username;
-			$user->pass = $input->$rm->name('password');
+			$user->pass = $values->text('password');
+			$user->customerNumber = $values->text('customerNumber');
 			$user->addRole(self::ROLE_APIUSER);
 			$user->addRole(self::ROLE_APIAUTHORIZED);
 			$saved = $user->save();
@@ -136,8 +138,11 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 
 		if ($this->user_exists($username)) {
 			$user = $this->wire('users')->get("name=$username");
+			$user->of(false);
 			$this->wire('session')->useradmin_response_auth = $this->edit_user_authorization($user, $input);
 			$this->wire('session')->useradmin_response_production = $this->edit_user_production($user, $input);
+			$user->customerNumber = $values->text('customerNumber');
+			$user->save();
 		} else {
 			$response = new UserAdminResponse();
 			$response->set_action(2);
