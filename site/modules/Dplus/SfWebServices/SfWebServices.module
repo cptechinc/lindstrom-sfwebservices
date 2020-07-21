@@ -29,10 +29,11 @@ class SfWebServices extends WireData implements Module {
 
 	public function process($endpoint, WireInput $input) {
 		$this->authenticator = $this->wire('modules')->get('UserAuthenticator');
+		$this->authenticator->endpoint = $endpoint;
 
 		if ($this->authenticator->authenticate_input($input)) {
-
 			$this->init_endpoint($endpoint);
+
 			if ($this->api['request']->process($input) !== true) {
 				// $this->error('Error processing Input');
 				return false;
