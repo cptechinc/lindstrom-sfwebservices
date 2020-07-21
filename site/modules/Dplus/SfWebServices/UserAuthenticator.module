@@ -10,11 +10,16 @@ class UserAuthenticator extends WireData implements Module {
 	const FIELD_PASSWORD = 'IDCPassword';
 	const FIELD_CUSTOMER = 'customerNumber';
 
+	const ENDPOINTS_WITHOUT_CUSTOMERNUMBER = array(
+		'createorderend'
+	);
+
 	public function __construct() {
 		$this->authenticated = false;
 		$this->username      = '';
 		$this->message       = '';
 		$this->error         = false;
+		$this->endpoint      = '';
 	}
 
 	/**
@@ -31,7 +36,10 @@ class UserAuthenticator extends WireData implements Module {
 			$this->error         = true;
 		} else {
 			$this->username = $values->text(self::FIELD_USERNAME);
-			$this->authenticated = $this->authenticate_user($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_PASSWORD), $values->text(self::FIELD_CUSTOMER));
+			$this->authenticated = $this->authenticate_user($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_PASSWORD));
+			if (!in_array($this->endpoint, self::ENDPOINTS_WITHOUT_CUSTOMERNUMBER)) {
+				$this->authenticated = $this->authenticate_user_customer($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_CUSTOMER));
+			}
 			$this->error = !$this->authenticated;
 		}
 
@@ -41,20 +49,41 @@ class UserAuthenticator extends WireData implements Module {
 		return $this->authenticated;
 	}
 
-	public function authenticate_user($username, $password, $customerNumber) {
+	/**
+	 * Return if User was able to log in
+	 * @param  string $username ProcessWire User Name
+	 * @param  string $password Password
+	 * @return bool
+	 */
+	public function authenticate_user($username, $password) {
 		if ($this->wire('users')->find("name=$username")->count()) {
 			$user = $this->wire('users')->get("name=$username");
 
 			if ($user->hasRole(SfWebServicesUserAdmin::ROLE_APIAUTHORIZED)) {
-				if ($user->customerNumber == $customerNumber) {
-					if ($user->id == $this->wire('user')->id) {
+				if ($user->id == $this->wire('user')->id) {
+					return true;
+				} else {
+					if ($this->wire('session')->login($username, $password)) {
 						return true;
-					} else {
-						if ($this->wire('session')->login($username, $password)) {
-							return true;
-						}
 					}
 				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Return if User is allowed to use Customer Number
+	 * @param  string $username       User Name
+	 * @param  string $customerNumber Customer ID
+	 * @return bool
+	 */
+	public function authenticate_user_customer($username, $customerNumber) {
+		if ($this->wire('users')->find("name=$username")->count()) {
+			$user = $this->wire('users')->get("name=$username");
+
+			if ($user->customerNumber == $customerNumber) {
+				return true;
 			}
 		}
 		return false;
