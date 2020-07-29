@@ -39,7 +39,8 @@ class CreateQuoteDplus extends ServiceDplus {
 			// NOTE: Set values needed for the createquote/header.xml.php file class
 			if (!array_key_exists('data', $this->response)) {
 				$this->response['data'] = array(
-					'quote' => array()
+					'quote' => array(),
+					'availability' => array()
 				);
 			}
 			$this->response['data']['quote']['error'] = $this->response['error'];
