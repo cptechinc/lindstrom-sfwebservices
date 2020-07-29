@@ -48,7 +48,7 @@ class SfWebServices extends WireData implements Module {
 				// $this->error('Error getting JSON response from Dplus');
 				return false;
 			}
-
+			
 			if ($this->api['response']->process($this->api['dplus']->response) !== true) {
 				// $this->error('Error processing JSON response from Dplus');
 				return false;
