@@ -63,7 +63,7 @@ class CreateOrderHeaderResponse extends ServiceResponse {
 	protected function build_xml_addl_vals() {
 		return array(
 			'single_tpls' => array(
-				'header' => $this->json['data']
+				'header' => $this->json
 			)
 		);
 	}
