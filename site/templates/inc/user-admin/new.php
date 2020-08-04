@@ -1,3 +1,8 @@
+<?php
+	foreach ($args as $variable => $value) {
+		$$variable = $value;
+	}
+?>
 <form action="<?= $page->url; ?>" id="new-user-form" method="POST">
 	<input type="hidden" name="action" value="add-user">
 
