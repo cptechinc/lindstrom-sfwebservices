@@ -16,7 +16,11 @@
 	</div>
 	<div class="form-group">
 		<label for="customerNumber">customerNumber</label>
-		<input type="customerNumber" class="form-control" id="customerNumber" name="customerNumber" value="">
+		<input type="customerNumber" class="form-control" id="customerNumber" name="customerNumber">
+	</div>
+	<div class="form-group">
+		<label for="customerName">customerNumber</label>
+		<input type="customerName" class="form-control" id="customerName" name="customerName">
 	</div>
 	<button type="submit" class="btn btn-success">Create</button>
 </form>

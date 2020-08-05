@@ -74,6 +74,7 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 			$user->name = $username;
 			$user->pass = $values->text('password');
 			$user->customerNumber = $values->text('customerNumber');
+			$user->customerName   = $values->text('customerName');
 			$user->addRole(self::ROLE_APIUSER);
 			$user->addRole(self::ROLE_APIAUTHORIZED);
 			$saved = $user->save();
@@ -119,9 +120,8 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 			$response->set_error(false);
 			$response->set_success(true);
 			$response->set_message("User $username was deleted");
-
-
 		}
+
 		$this->wire('session')->useradmin_response = $response;
 
 		if ($response->has_success()) {
@@ -142,6 +142,7 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 			$this->wire('session')->useradmin_response_auth = $this->edit_user_authorization($user, $input);
 			$this->wire('session')->useradmin_response_production = $this->edit_user_production($user, $input);
 			$user->customerNumber = $values->text('customerNumber');
+			$user->customerName   = $values->text('customerName');
 			$user->save();
 		} else {
 			$response = new UserAdminResponse();

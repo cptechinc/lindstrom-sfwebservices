@@ -41,6 +41,10 @@
 						<input type="customerNumber" class="form-control" id="customerNumber" name="customerNumber" value="<?= $user->customerNumber; ?>">
 					</div>
 					<div class="form-group">
+						<label for="customerName">customerName</label>
+						<input type="customerName" class="form-control" id="customerName" name="customerName" value="<?= $user->customerName; ?>">
+					</div>
+					<div class="form-group">
 						<div class="custom-control custom-checkbox">
 							<input type="checkbox" class="custom-control-input" name="authorized" id="authorized" value="Y" <?= $user->is_authorized() ? 'checked' : '' ; ?>>
 							<label class="custom-control-label" for="authorized">Authorize?</label>
