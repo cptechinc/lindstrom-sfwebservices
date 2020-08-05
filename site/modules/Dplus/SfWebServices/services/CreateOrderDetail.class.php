@@ -37,6 +37,19 @@ class CreateOrderDetailDplus extends ServiceDplus {
 		$data['reqShipDate'] = $requestdate_formatted;
 		return parent::create_requestdata($data);
 	}
+
+	public function response() {
+		$result = parent::response();
+
+		if ($result || $this->response) {
+			// NOTE: Set values needed for the createorderdetail/orderdetail.xml.php file class
+			if (!array_key_exists('data', $this->response)) {
+				$this->response['data'] = array(
+				);
+			}
+		}
+		return $result;
+	}
 }
 
 class CreateOrderDetailResponse extends ServiceResponse {
