@@ -1,9 +1,8 @@
 	<footer class="bg-dark pb-3">
 		<div class='container'>
 			<div class="row">
-				<div class="col-sm-4 text-white">
-					<?= $appconfig->title; ?> @ <?= $config->customer->company_name; ?> <br>
-					&copy; <?= date('Y'); ?> <?= $appconfig->company_name; ?>
+				<div class="col-sm-4 text-white"> <br>
+					&copy; <?= date('Y'); ?> CPTech
 				</div>
 				<div class="col-sm-4">
 					<strong class="text-white">User: <?= $user->name; ?></strong> <br>
