@@ -35,26 +35,27 @@ class SfWebServices extends WireData implements Module {
 			$this->init_endpoint($endpoint);
 
 			if ($this->api['request']->process($input) !== true) {
-				// $this->error('Error processing Input');
+				$this->api['response']->process($this->api['dplus']->error_response('Error Processing Request'));
 				return false;
 			}
 
 			if ($this->api['dplus']->request($this->api['request']->requestdata) !== true) {
-				// $this->error('Error sending request to Dplus');
+				$this->api['response']->process($this->api['dplus']->error_response('Request Data Not sent'));
 				return false;
 			}
 
 			if ($this->api['dplus']->response() !== true) {
-				// $this->error('Error getting JSON response from Dplus');
+				$this->api['response']->process($this->api['dplus']->error_response('No Response from Dplus ' . session_id() ));
 				return false;
 			}
-			
+
 			if ($this->api['response']->process($this->api['dplus']->response) !== true) {
 				// $this->error('Error processing JSON response from Dplus');
 				return false;
 			}
 		} else {
 			$this->init_endpoint($endpoint);
+
 			if ($this->api['response']->process($this->api['dplus']->error_response($this->authenticator->message)) !== true) {
 				// $this->error('Error processing JSON response from Dplus');
 				return false;
