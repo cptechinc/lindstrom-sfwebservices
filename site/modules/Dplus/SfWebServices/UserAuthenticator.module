@@ -31,13 +31,15 @@ class UserAuthenticator extends WireData implements Module {
 		$rm = strtolower($input->requestMethod());
 		$values = $input->$rm;
 
+
 		if (empty($values->text(self::FIELD_USERNAME)) || empty($values->text(self::FIELD_USERNAME))) {
 			$this->authenticated = false;
 			$this->error         = true;
 		} else {
 			$this->username = $values->text(self::FIELD_USERNAME);
 			$this->authenticated = $this->authenticate_user($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_PASSWORD));
-			if (!in_array($this->endpoint, self::ENDPOINTS_WITHOUT_CUSTOMERNUMBER)) {
+
+			if (!in_array($this->endpoint, self::ENDPOINTS_WITHOUT_CUSTOMERNUMBER) && $this->authenticated == true) {
 				$this->authenticated = $this->authenticate_user_customer($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_CUSTOMER));
 			}
 			$this->error = !$this->authenticated;
@@ -82,7 +84,7 @@ class UserAuthenticator extends WireData implements Module {
 		if ($this->wire('users')->find("name=$username")->count()) {
 			$user = $this->wire('users')->get("name=$username");
 			$custID = strlen($customerNumber) > 6 ? substr($customerNumber, 0, 6) : $customerNumber;
-			
+
 			if ($user->customerNumber == $custID) {
 				return true;
 			}
