@@ -128,7 +128,8 @@ abstract class ServiceDplus extends WireData {
 			"sessionid" => session_id(),
 			"service" => strtoupper($this::SERVICE),
 			"error" => true,
-			"message" => $message
+			"message" => $message,
+			"data" => array()
 		);
 	}
 

@@ -44,8 +44,7 @@ class CreateOrderDetailDplus extends ServiceDplus {
 		if ($result || $this->response) {
 			// NOTE: Set values needed for the createorderdetail/orderdetail.xml.php file class
 			if (!array_key_exists('data', $this->response)) {
-				$this->response['data'] = array(
-				);
+				$this->response['data'] = array();
 			}
 		}
 		return $result;
