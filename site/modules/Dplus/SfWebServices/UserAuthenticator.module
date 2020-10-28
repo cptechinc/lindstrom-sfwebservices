@@ -85,7 +85,7 @@ class UserAuthenticator extends WireData implements Module {
 			$user = $this->wire('users')->get("name=$username");
 			$custID = strlen($customerNumber) > 6 ? substr($customerNumber, 0, 6) : $customerNumber;
 
-			if ($user->customerNumber == $custID) {
+			if (empty($user->customerNumber) || $user->customerNumber == $custID) {
 				return true;
 			}
 		}
