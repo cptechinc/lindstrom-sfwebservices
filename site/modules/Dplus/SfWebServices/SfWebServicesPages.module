@@ -9,8 +9,7 @@ require_once(__DIR__ . '/../PwPages.module');
  */
 class SfWebServicesPages extends PwPages implements Module {
 
-	const FIELDS = array(
-	);
+	const FIELDS = array();
 
 	const TEMPLATES = array(
 		'api' => array(
@@ -37,6 +36,10 @@ class SfWebServicesPages extends PwPages implements Module {
 			'name'   => 'login',
 			'fields' => array()
 		),
+		'pricing' => array(
+			'name'   => 'pricing',
+			'fields' => array()
+		)
 	);
 
 	const PAGES = array(
@@ -123,6 +126,13 @@ class SfWebServicesPages extends PwPages implements Module {
 			'title'    => 'Create Order End',
 			'summary'  => 'Create Order End',
 			'parent'   => '/tests/'
+		),
+		'pricing' => array(
+			'template' => 'pricing',
+			'name'     => 'pricing',
+			'title'    => 'pricing',
+			'summary'  => 'Pricing',
+			'parent'   => '/'
 		)
 	);
 

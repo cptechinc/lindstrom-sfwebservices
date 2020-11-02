@@ -267,6 +267,14 @@ abstract class ServiceResponse extends WireData {
 	}
 
 	/**
+	 * Returns the JSON data
+	 * @return string
+	 */
+	public function get_json() {
+		return $this->json;
+	}
+
+	/**
 	 * Validates Response Data
 	 * @return bool
 	 */
