@@ -10,50 +10,52 @@
 	</button>
 
 	<div class="collapse navbar-collapse" id="navbar-navigation">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item active">
-				<a class="nav-link" href="#"><?= $homepage->title; ?></a>
-			</li>
-			<?php if ($user->hasRole('user-admin')) : ?>
-				<li class="nav-item">
-					<a class="nav-link" href="<?= $pages->get('template=user-admin')->url; ?>">
-						<?= $pages->get('template=user-admin')->title; ?>
-					</a>
+		<?php if ($page->hidenav == false) : ?>
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item active">
+					<a class="nav-link" href="#"><?= $homepage->title; ?></a>
 				</li>
-			<?php else : ?>
-				<li class="nav-item">
-					<a class="nav-link" href="<?= $pages->get('template=login')->url; ?>">
-						<?= $pages->get('template=login')->title; ?>
+				<?php if ($user->hasRole('user-admin')) : ?>
+					<li class="nav-item">
+						<a class="nav-link" href="<?= $pages->get('template=user-admin')->url; ?>">
+							<?= $pages->get('template=user-admin')->title; ?>
+						</a>
+					</li>
+				<?php else : ?>
+					<li class="nav-item">
+						<a class="nav-link" href="<?= $pages->get('template=login')->url; ?>">
+							<?= $pages->get('template=login')->title; ?>
+						</a>
+					</li>
+				<?php endif; ?>
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="api-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<?= $apimenu->title; ?>
 					</a>
+					<div class="dropdown-menu" aria-labelledby="api-dropdown">
+						<?php foreach ($apimenu->children as $api) : ?>
+							<a class="dropdown-item" href="<?= $api->url; ?>">
+								<?= $api->title; ?>
+							</a>
+						<?php endforeach; ?>
+					</div>
 				</li>
-			<?php endif; ?>
 
-			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" id="api-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					<?= $apimenu->title; ?>
-				</a>
-				<div class="dropdown-menu" aria-labelledby="api-dropdown">
-					<?php foreach ($apimenu->children as $api) : ?>
-						<a class="dropdown-item" href="<?= $api->url; ?>">
-							<?= $api->title; ?>
-						</a>
-					<?php endforeach; ?>
-				</div>
-			</li>
-
-			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" id="apitest-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					<?= $apitest->title; ?>
-				</a>
-				<div class="dropdown-menu" aria-labelledby="apitest-dropdown">
-					<?php foreach ($apitest->children as $api) : ?>
-						<a class="dropdown-item" href="<?= $api->url; ?>">
-							<?= $api->title; ?>
-						</a>
-					<?php endforeach; ?>
-				</div>
-			</li>
-		</ul>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="apitest-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<?= $apitest->title; ?>
+					</a>
+					<div class="dropdown-menu" aria-labelledby="apitest-dropdown">
+						<?php foreach ($apitest->children as $api) : ?>
+							<a class="dropdown-item" href="<?= $api->url; ?>">
+								<?= $api->title; ?>
+							</a>
+						<?php endforeach; ?>
+					</div>
+				</li>
+			</ul>
+		<?php endif; ?>
 		<form class="form-inline my-2 my-lg-0">
 			<a href="<?= $pages->logoutURL(); ?>" class="btn btn-danger">Logout</a>
 		</form>

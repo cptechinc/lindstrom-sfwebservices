@@ -1,4 +1,15 @@
 <?php
+	$page->hidenav = true;
+	
+	$rm = strtolower($input->requestMethod());
+	$values = $input->$rm;
+
+	if ($values->action) {
+		$authenticator = $modules->get('UserAuthenticatorPortal');
+		$authenticator->process_input($input);
+		$session->redirect($page->url);
+	}
+
 	if ($user->isLoggedIn()) {
 		if ($user->has_portal()) {
 			$session->redirect($page->parent->url, $http301 = false);

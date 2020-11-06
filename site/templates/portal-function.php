@@ -1,7 +1,12 @@
 <?php
+	$page->hidenav = true;
+	
 	if (!$user->isLoggedin() || !$user->has_portal()) {
 		$session->redirect($pages->get('template=portal-user')->url, $http301 = false);
 	} else {
+		if (!$session->password) {
+			$session->redirect($pages->get('template=portal-user')->url.'?action=logout', $http301 = false);
+		}
 		$template = str_replace('.php', '', $page->pw_template) . '.php';
 
 		if (file_exists("./$template")) {
