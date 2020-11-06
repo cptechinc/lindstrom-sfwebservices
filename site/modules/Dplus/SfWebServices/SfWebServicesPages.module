@@ -9,7 +9,22 @@ require_once(__DIR__ . '/../PwPages.module');
  */
 class SfWebServicesPages extends PwPages implements Module {
 
-	const FIELDS = array();
+	const FIELDS = array(
+		'apiservice' => array(
+			'name'  => 'apiservice',
+			'type'  => 'text',
+			'label' => 'API Service',
+			'description' => 'API Service Endpoint',
+			'notes'       => ''
+		),
+		'pw_template' => array(
+			'name'  => 'pw_template',
+			'type'  => 'text',
+			'label' => 'ProcessWire Template',
+			'description' => '',
+			'notes'       => ''
+		),
+	);
 
 	const TEMPLATES = array(
 		'api' => array(
@@ -36,7 +51,19 @@ class SfWebServicesPages extends PwPages implements Module {
 			'name'   => 'login',
 			'fields' => array()
 		),
-		'pricing' => array(
+		'portal-menu' => array(
+			'name'   => 'portal-menu',
+			'fields' => array()
+		),
+		'portal-function' => array(
+			'name'   => 'portal-function',
+			'fields' => array('title', 'summary', 'apiservice', 'pw_template')
+		),
+		'portal-user' => array(
+			'name'   => 'portal-user',
+			'fields' => array('title')
+		),
+		'portal-pricing' => array(
 			'name'   => 'pricing',
 			'fields' => array()
 		)
@@ -127,12 +154,28 @@ class SfWebServicesPages extends PwPages implements Module {
 			'summary'  => 'Create Order End',
 			'parent'   => '/tests/'
 		),
-		'pricing' => array(
-			'template' => 'pricing',
-			'name'     => 'pricing',
-			'title'    => 'pricing',
-			'summary'  => 'Pricing',
+		'portal-menu' => array(
+			'template' => 'portal-menu',
+			'name'     => 'app',
+			'title'    => 'Portal Menu',
+			'summary'  => 'Portal Menu',
 			'parent'   => '/'
+		),
+		'portal-menu' => array(
+			'template' => 'portal-user',
+			'name'     => 'user',
+			'title'    => 'User',
+			'summary'  => 'Portal User',
+			'parent'   => '/app/'
+		),
+		'portal-pricing' => array(
+			'template' => 'portal-function',
+			'name'     => 'pricing',
+			'title'    => 'Pricing',
+			'summary'  => 'Pricing',
+			'pw_template'  => 'portal-pricing',
+			'parent'   => '/app/',
+			'apiservice'  => 'createquote'
 		)
 	);
 
