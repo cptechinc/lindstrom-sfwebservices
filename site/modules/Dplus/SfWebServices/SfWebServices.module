@@ -23,6 +23,9 @@ class SfWebServices extends WireData implements Module {
 	// Class for authenticating Credentials for API / Portal
 	protected $authenticator = false;
 
+	// Which Authenticator to use Api / Portal
+	protected $authtype = 'api';
+
 	/**
 	 * Set Debug Value
 	 * @param  bool   $debug
@@ -32,8 +35,24 @@ class SfWebServices extends WireData implements Module {
 		$this->debug = false;
 	}
 
+	public function get_authtype() {
+		return $this->authtype;
+	}
+	public function authtypePortal() {
+		$this->authtype = 'portal';
+	}
+
+	public function authtypeApi() {
+		$this->authtype = 'api';
+	}
+
+	protected function authenticator() {
+		$type = ucfirst($this->authtype);
+		return $this->wire('modules')->get("UserAuthenticator$type");
+	}
+
 	public function process($endpoint, WireInput $input) {
-		$this->authenticator = $this->wire('modules')->get('UserAuthenticatorApi');
+		$this->authenticator = $this->authenticator();
 		$this->authenticator->endpoint = $endpoint;
 
 		if ($this->authenticator->authenticate_input($input)) {
@@ -55,14 +74,12 @@ class SfWebServices extends WireData implements Module {
 			}
 
 			if ($this->api['response']->process($this->api['dplus']->response) !== true) {
-				// $this->error('Error processing JSON response from Dplus');
 				return false;
 			}
 		} else {
 			$this->init_endpoint($endpoint);
 
 			if ($this->api['response']->process($this->api['dplus']->error_response($this->authenticator->message)) !== true) {
-				// $this->error('Error processing JSON response from Dplus');
 				return false;
 			}
 		}
