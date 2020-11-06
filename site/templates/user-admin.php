@@ -25,6 +25,18 @@
 			$session->remove('useradmin_response_production');
 		}
 
+		if ($session->useradmin_response_access_api) {
+			$page->body .= render_php("{$config->paths->templates}inc/user-admin/response.php", $args = array('page' => $page, 'config' => $config, 'response' => $session->useradmin_response_access_api));
+			$page->body .= $html->div('class=mb-3');
+			$session->remove('useradmin_response_access_api');
+		}
+
+		if ($session->useradmin_response_access_portal) {
+			$page->body .= render_php("{$config->paths->templates}inc/user-admin/response.php", $args = array('page' => $page, 'config' => $config, 'response' => $session->useradmin_response_access_portal));
+			$page->body .= $html->div('class=mb-3');
+			$session->remove('useradmin_response_access_portal');
+		}
+
 		if ($input->get->user) {
 			$userID = $input->get->text('user');
 			$edituser = $users->get("name=$userID");
@@ -35,7 +47,7 @@
 			$page->body .= render_php("{$config->paths->templates}inc/user-admin/new.php", $args = array('page' => $page));
 			$page->js .= render_php("{$config->paths->templates}inc/user-admin/new.js.php", $args = array());
 		} else {
-			$apiusers = $admin->get_apiusers();
+			$apiusers = $admin->get_users_webservice();
 			$page->body .= render_php("{$config->paths->templates}inc/user-admin/list.php", $args = array('page' => $page, 'users' => $apiusers));
 		}
 	} else {

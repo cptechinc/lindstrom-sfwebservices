@@ -56,6 +56,19 @@
 							<label class="custom-control-label" for="production">Send Requests to Production?</label>
 						</div>
 					</div>
+					<hr>
+					<div class="form-group">
+						<div class="custom-control custom-checkbox">
+							<input type="checkbox" class="custom-control-input" name="portal" id="portal-user" value="Y" <?= $user->has_portal() ? 'checked' : '' ; ?>>
+							<label class="custom-control-label" for="portal-user">Portal User</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="custom-control custom-checkbox">
+							<input type="checkbox" class="custom-control-input" name="api" id="api-user" value="Y" <?= $user->has_api() ? 'checked' : '' ; ?>>
+							<label class="custom-control-label" for="api-user">API User</label>
+						</div>
+					</div>
 					<button type="submit" class="btn btn-success">
 						<i class="fa fa-floppy-o"aria-hidden="true"></i> Save
 					</button>
