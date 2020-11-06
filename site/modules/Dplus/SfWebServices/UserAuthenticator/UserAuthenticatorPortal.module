@@ -24,6 +24,9 @@ class UserAuthenticatorPortal extends UserAuthenticator implements Module {
 		}
 		$this->error = !$this->authenticated;
 
+		if (!$this->authenticated) {
+			$this->message = 'Customer Not Authorized';
+		}
 		return $this->authenticated;
 	}
 
@@ -47,24 +50,28 @@ class UserAuthenticatorPortal extends UserAuthenticator implements Module {
 		return false;
 	}
 
-	/**
-	 * Return if User is allowed to use Customer Number
-	 * @param  string $username       User Name
-	 * @param  string $customerNumber Customer ID
-	 * @return bool
-	 */
-	public function authenticate_user_customer($username, $customerNumber) {
-		if ($this->user_exists($username)) {
-			$user = $this->get_user($username);
-			$custID = strlen($customerNumber) > 6 ? substr($customerNumber, 0, 6) : $customerNumber;
+/* =============================================================
+	User Login Functions
+============================================================= */
+	public function process_input(WireInput $input) {
+		$session = $this->wire('session');
+		$rm = strtolower($input->requestMethod());
+		$values = $input->$rm;
 
-			if ($user->customerNumber == $custID) {
-				return true;
-			}
+		switch ($values->text('action')) {
+			case 'login':
+				if ($session->login($values->username('username'), $values->text('password'))) {
+					$session->remove('errormsg');
+					$session->password = $values->text('password');
+				} else {
+					$session->errormsg = 'Incorrect username or password';
+				}
+				break;
+			case 'logout':
+				$session->logout();
+				break;
 		}
-		return false;
 	}
-
 /* =============================================================
 	ProcessWire Module Functions
 ============================================================= */
