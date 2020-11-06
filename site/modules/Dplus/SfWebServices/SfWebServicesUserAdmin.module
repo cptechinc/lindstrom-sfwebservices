@@ -9,10 +9,129 @@ require_once(__DIR__ . '/UserAdminResponse.class.php');
  */
 class SfWebServicesUserAdmin extends WireData implements Module {
 	const TEMPLATE_USERADMIN = 'user-admin';
+	const ROLE_WEBSERVICEUSER = 'webservice-user';
 	const ROLE_APIUSER       = 'api-user';
 	const ROLE_APIAUTHORIZED = 'api-authorized';
 	const ROLE_APIPRODUCTION = 'api-production';
+	const ROLE_PORTALUSER    = 'portal-user';
 
+/* =============================================================
+	CRUD Read Functions
+============================================================= */
+	/**
+	 * Return if User ID exists
+	 * @param  string $username User Name
+	 * @return bool
+	 */
+	public function user_exists($username) {
+		return boolval($this->wire('users')->find("name=$username")->count());
+	}
+
+	/**
+	 * Return User
+	 * @param  string $username User Name
+	 * @return User
+	 */
+	public function get_user($username) {
+		return $this->wire('users')->get("name=$username");
+	}
+
+	/**
+	 * Returns Users for API
+	 * @return Users
+	 */
+	public function get_apiusers() {
+		$admin = self::TEMPLATE_USERADMIN;
+		$api = self::ROLE_APIUSER;
+		return $this->wire('users')->find("roles=$api, roles!=$admin");
+	}
+
+	/**
+	 * Returns Users for WebService
+	 * @return Users
+	 */
+	public function get_users_webservice() {
+		$admin = self::TEMPLATE_USERADMIN;
+		$role = self::ROLE_WEBSERVICEUSER;
+		return $this->wire('users')->find("roles=$role, roles!=$admin");
+	}
+
+/* =============================================================
+	CRUD Create Functions
+============================================================= */
+	/**
+	 * Creates ProcessWire User
+	 * @param  WireInput $input Input Data
+	 * @return bool
+	 */
+	public function create_user(WireInput $input) {
+		$rm = strtolower($input->requestMethod());
+		$values = $input->$rm;
+
+		$user = new User();
+		$user->name = $values->name('username');;
+		$user->pass = $values->text('password');
+		$user->customerNumber = $values->text('customerNumber');
+		$user->customerName   = $values->text('customerName');
+		$user->addRole(self::ROLE_WEBSERVICEUSER);
+		return $user->save();
+	}
+	
+/* =============================================================
+	CRUD Update Functions
+============================================================= */
+	/**
+	 * Add Role to User
+	 * @param User   $user
+	 * @param string $role
+	 */
+	public function add_role_user(User $user, $role) {
+		if ($user->hasRole($role)) {
+			return true;
+		} else {
+			$user->addRole($role);
+			return $user->save();
+		}
+	}
+
+	/**
+	 * Remove Role from User
+	 * @param User   $user
+	 * @param string $role
+	 */
+	public function remove_role_user(User $user, $role) {
+		if ($user->hasRole($role)) {
+			$user->removeRole($role);
+			return $user->save();
+		} else {
+			return true;
+		}
+	}
+
+/* =============================================================
+	CRUD Delete Functions
+============================================================= */
+	/**
+	 * Delete User
+	 * @param  string $username Username
+	 * @return bool
+	 */
+	public function delete_user($username) {
+		if ($this->user_exists($username)) {
+			$user = $this->get_user($username);
+			return $user->delete();
+		}
+		return true;
+	}
+
+/* =============================================================
+	CRUD Processing Functions
+============================================================= */
+	/**
+	 * Process Action from Input
+	 * @param  WireInput $input Input Data
+	 * @return void
+	 */
 	public function process_input(WireInput $input) {
 		$rm = strtolower($input->requestMethod());
 
@@ -33,25 +152,6 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 	}
 
 	/**
-	 * Return if User ID exists
-	 * @param  string $username User Name
-	 * @return bool
-	 */
-	public function user_exists($username) {
-		return boolval($this->wire('users')->find("name=$username")->count());
-	}
-
-	/**
-	 * Returns Users for API
-	 * @return Users
-	 */
-	public function get_apiusers() {
-		$admin = self::TEMPLATE_USERADMIN;
-		$api = self::ROLE_APIUSER;
-		return $this->wire('users')->find("roles=$api, roles!=$admin");
-	}
-
-	/**
 	 * Add API user
 	 * @param  WireInput $input
 	 * @return void
@@ -66,25 +166,23 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		$response->set_action(1);
 
 		if ($this->user_exists($username)) {
-			$response->set_error(true);
-			$response->set_success(false);
-			$response->set_message("User $username Already Exists");
+			$success = false;
+			$msg = "User $username Already Exists";
 		} else {
-			$user = new User();
-			$user->name = $username;
-			$user->pass = $values->text('password');
-			$user->customerNumber = $values->text('customerNumber');
-			$user->customerName   = $values->text('customerName');
-			$user->addRole(self::ROLE_APIUSER);
-			$user->addRole(self::ROLE_APIAUTHORIZED);
-			$saved = $user->save();
-			$response->set_error($saved ? false : true);
-			$response->set_success($saved);
+			$success = $this->create_user($input);
 			$msg = "User $username was ";
 			$msg .= $saved ? '' : 'not ';
 			$msg .= "able to be saved";
-			$response->set_message($msg);
+			if ($success) {
+				$user = $this->get_user($username);
+				$user->of(false);
+				$this->edit_user_access_api($user, $input);
+				$this->edit_user_access_portal($user, $input);
+			}
 		}
+		$response->set_success($success);
+		$response->set_error(!$success);
+		$response->set_message($msg);
 		$this->wire('session')->useradmin_response = $response;
 
 		if ($response->has_success()) {
@@ -108,20 +206,18 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		$response->set_action(1);
 
 		if ($this->user_exists($username)) {
-			$user = $this->wire('users')->get("name=$username");
-			$saved = $user->delete();
-			$response->set_error($saved ? false : true);
-			$response->set_success($saved);
+			$user = $this->get_user($username);
+			$success = $user->delete();
 			$msg = "User $username was ";
 			$msg .= $saved ? '' : 'not ';
 			$msg .= " deleted";
-			$response->set_message($msg);
 		} else {
-			$response->set_error(false);
-			$response->set_success(true);
-			$response->set_message("User $username was deleted");
+			$success = true;
+			$msg = "User $username was deleted";
 		}
-
+		$response->set_success($success);
+		$response->set_error(!$success);
+		$response->set_message($msg);
 		$this->wire('session')->useradmin_response = $response;
 
 		if ($response->has_success()) {
@@ -131,16 +227,23 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		}
 	}
 
+	/**
+	 * Edits User Authorzation such as authorization as a USER, access to production, api, and portal
+	 * @param  WireInput $input [description]
+	 * @return void
+	 */
 	public function edit_user_authorizations(WireInput $input) {
 		$rm = strtolower($input->requestMethod());
 		$values = $input->$rm;
 		$username = $values->name('username');
 
 		if ($this->user_exists($username)) {
-			$user = $this->wire('users')->get("name=$username");
+			$user = $this->get_user($username);
 			$user->of(false);
 			$this->wire('session')->useradmin_response_auth = $this->edit_user_authorization($user, $input);
 			$this->wire('session')->useradmin_response_production = $this->edit_user_production($user, $input);
+			$this->wire('session')->useradmin_response_access_api = $this->edit_user_access_api($user, $input);
+			$this->wire('session')->useradmin_response_access_portal = $this->edit_user_access_portal($user, $input);
 			$user->customerNumber = $values->text('customerNumber');
 			$user->customerName   = $values->text('customerName');
 			$user->save();
@@ -156,12 +259,82 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		$this->wire('session')->redirect($this->get_viewuserURL($username));
 	}
 
+	/**
+	 * Add / Remove User access to API
+	 * @param  User      $user
+	 * @param  WireInput $input Input Data
+	 * @return void
+	 */
+	public function edit_user_access_api(User $user, WireInput $input) {
+		$rm = strtolower($input->requestMethod());
+		$values = $input->$rm;
+		$response = new UserAdminResponse();
+		$response->set_action(2);
+		$user->of(false);
 
+		if ($values->text('api') == 'Y') {
+			$saved = $this->add_role_user($user, self::ROLE_APIUSER);
+
+			if ($saved) {
+				$msg = "User $username has access to API";
+			} else {
+				$msg = "Unable to grant API access to User $username";
+			}
+		} else {
+			$saved = $this->remove_role_user($user, self::ROLE_APIUSER);
+
+			if ($saved) {
+				$msg = "User $username API access remove";
+			} else {
+				$msg = "Unable to remove API access User $username";
+			}
+		}
+		$response->set_success($saved);
+		$response->set_error(!$saved);
+		$response->set_message($msg);
+		return $response;
+	}
+
+	/**
+	 * Add / Remove User access to Portal
+	 * @param  User      $user
+	 * @param  WireInput $input Input Data
+	 * @return void
+	 */
+	public function edit_user_access_portal(User $user, WireInput $input) {
+		$rm = strtolower($input->requestMethod());
+		$values = $input->$rm;
+		$response = new UserAdminResponse();
+		$response->set_action(2);
+		$user->of(false);
+
+		if ($values->text('portal') == 'Y') {
+			$saved = $this->add_role_user($user, self::ROLE_PORTALUSER);
+
+			if ($saved) {
+				$msg = "User $username has access to Portal";
+			} else {
+				$msg = "Unable to grant Portal access to User $username";
+			}
+		} else {
+			$saved = $this->remove_role_user($user, self::ROLE_PORTALUSER);
+
+			if ($saved) {
+				$msg = "User $username Portal access remove";
+			} else {
+				$msg = "Unable to remove Portal access User $username";
+			}
+		}
+		$response->set_success($saved);
+		$response->set_error(!$saved);
+		$response->set_message($msg);
+		return $response;
+	}
 
 	/**
 	 * Updates the User's Authorization value
 	 * @param  WireInput $input
-	 * @return void
+	 * @return UserAdminResponse
 	 */
 	public function edit_user_authorization(User $user, WireInput $input) {
 		$saved = false;
@@ -174,38 +347,25 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		$user->of(false);
 
 		if ($values->text('authorized') == 'Y') {
-			if ($user->hasRole(self::ROLE_APIAUTHORIZED)) {
-				$saved = true;
-			} else {
-				$user->addRole(self::ROLE_APIAUTHORIZED);
-				$saved = $user->save();
-			}
-			$response->set_success($saved);
-			$response->set_error(!$saved);
+			$saved = $this->add_role_user($user, self::ROLE_APIAUTHORIZED);
 
 			if ($saved) {
 				$msg = "User $username is now authorized";
 			} else {
 				$msg = "Unable to authorize User $username";
 			}
-			$response->set_message($msg);
 		} else {
-			if ($user->hasRole(self::ROLE_APIAUTHORIZED)) {
-				$user->removeRole(self::ROLE_APIAUTHORIZED);
-				$saved = $user->save();
-			} else {
-				$saved = true;
-			}
-			$response->set_success($saved);
-			$response->set_error(!$saved);
+			$saved = $this->remove_role_user($user, self::ROLE_APIAUTHORIZED);
 
 			if ($saved) {
 				$msg = "User $username is now deauthorized";
 			} else {
 				$msg = "Unable to deauthorize User $username";
 			}
-			$response->set_message($msg);
 		}
+		$response->set_success($saved);
+		$response->set_error(!$saved);
+		$response->set_message($msg);
 		return $response;
 	}
 
@@ -225,38 +385,25 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		$user->of(false);
 
 		if ($values->text('production') == 'Y') {
-			if ($user->hasRole(self::ROLE_APIPRODUCTION)) {
-				$saved = true;
-			} else {
-				$user->addRole(self::ROLE_APIPRODUCTION);
-				$saved = $user->save();
-			}
-			$response->set_success($saved);
-			$response->set_error(!$saved);
+			$saved = $this->add_role_user($user, self::ROLE_APIPRODUCTION);
 
 			if ($saved) {
 				$msg = "User $username is now a Production User";
 			} else {
 				$msg = "Unable to set User $username as Production User";
 			}
-			$response->set_message($msg);
 		} else {
-			if ($user->hasRole(self::ROLE_APIPRODUCTION)) {
-				$user->removeRole(self::ROLE_APIPRODUCTION);
-				$saved = $user->save();
-			} else {
-				$saved = true;
-			}
-			$response->set_success($saved);
-			$response->set_error(!$saved);
+			$saved = $this->remove_role_user($user, self::ROLE_APIPRODUCTION);
 
 			if ($saved) {
 				$msg = "User $username is now a Sandbox User";
 			} else {
 				$msg = "Unable to Sandbox User $username";
 			}
-			$response->set_message($msg);
 		}
+		$response->set_success($saved);
+		$response->set_error(!$saved);
+		$response->set_message($msg);
 		return $response;
 	}
 
@@ -274,7 +421,7 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		$response->set_action(2);
 
 		if ($this->user_exists($username)) {
-			$user = $this->wire('users')->get("name=$username");
+			$user = $this->get_user($username);
 			$user->of(false);
 			$saved = false;
 
@@ -310,10 +457,22 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		}
 	}
 
+/* =============================================================
+	URL Functions
+============================================================= */
+	/**
+	 * Return User Edit URL for User ID
+	 * @param  string $userID User ID
+	 * @return string
+	 */
 	public function get_viewuserURL($userID) {
 		return $this->wire('pages')->get('template=user-admin')->url . "?user=$userID";
 	}
 
+	/**
+	 * Return URL to add Users
+	 * @return string
+	 */
 	public function get_adduserURL() {
 		return $this->wire('pages')->get('template=user-admin')->url . "?add=new";
 	}
@@ -343,13 +502,18 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 			$user  = $event->object;
 			$event->return = $user->hasRole(self::ROLE_APIPRODUCTION);
 		});
+
+		$this->addHook("User::has_api", function($event) {
+			$user  = $event->object;
+			$event->return = $user->hasRole(self::ROLE_APIUSER);
+		});
+
+		$this->addHook("User::has_portal", function($event) {
+			$user  = $event->object;
+			$event->return = $user->hasRole(self::ROLE_PORTALUSER);
+		});
 	}
 
-	/**
-	 * ProcessWire Module Info
-	 *
-	 * @return void
-	 */
 	public static function getModuleInfo() {
 		return array(
 			'title' => 'Sf Webservices User Admin',
