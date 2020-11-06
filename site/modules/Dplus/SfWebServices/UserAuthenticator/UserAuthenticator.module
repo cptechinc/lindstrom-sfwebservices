@@ -36,7 +36,7 @@ class UserAuthenticator extends WireData implements Module {
 
 	/**
 	 * Authenticates User Input
-	 * @param  WireInput $input [description]
+	 * @param  WireInput $input Input Data
 	 * @return bool
 	 */
 	public function authenticate_input(WireInput $input) {
@@ -69,6 +69,10 @@ class UserAuthenticator extends WireData implements Module {
 			$user = $this->get_user($username);
 
 			if ($user->hasRole(SfWebServicesUserAdmin::ROLE_APIAUTHORIZED)) {
+				if ($user->id == $this->wire('user')->id) {
+					return true;
+				}
+
 				if ($this->wire('session')->login($username, $password)) {
 					return true;
 				}
