@@ -1,0 +1,81 @@
+<?php namespace ProcessWire;
+
+/**
+ * class SfWebServicesUserAdmin
+ *
+ * Handles User Administration
+ */
+class UserAuthenticatorPortal extends UserAuthenticator implements Module {
+	const ENDPOINTS_PORTAL = array(
+		'createquote'
+	);
+
+	/**
+	 * Authenticates User Input
+	 * @param  WireInput $input
+	 * @return bool
+	 */
+	public function authenticate_input(WireInput $input) {
+		$rm = strtolower($input->requestMethod());
+		$values = $input->$rm;
+
+		if (parent::authenticate_input($input)) {
+			$this->authenticated = $this->authenticate_user_portal($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_CUSTOMER));
+		}
+		$this->error = !$this->authenticated;
+
+		return $this->authenticated;
+	}
+
+
+	/**
+	 * Return if $username is a valid Portal User
+	 * @param  string $username       User Name
+	 * @param  string $customerNumber Customer ID
+	 * @return bool
+	 */
+	public function authenticate_user_portal($username, $customerNumber) {
+		if ($this->user_exists($username)) {
+			$user = $this->get_user($username);
+			if (!$user->has_portal()) {
+				return false;
+			}
+			if (in_array($this->endpoint, self::ENDPOINTS_PORTAL)) {
+				return $this->authenticate_user_customer($username, $customerNumber);
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Return if User is allowed to use Customer Number
+	 * @param  string $username       User Name
+	 * @param  string $customerNumber Customer ID
+	 * @return bool
+	 */
+	public function authenticate_user_customer($username, $customerNumber) {
+		if ($this->user_exists($username)) {
+			$user = $this->get_user($username);
+			$custID = strlen($customerNumber) > 6 ? substr($customerNumber, 0, 6) : $customerNumber;
+
+			if ($user->customerNumber == $custID) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+/* =============================================================
+	ProcessWire Module Functions
+============================================================= */
+	public static function getModuleInfo() {
+		return array(
+			'title' => 'Sf Webservices User Authenticator for Portal',
+			'version' => 101,
+			'summary' => 'Handles User Authentication for Portal',
+			'singular' => true,
+			'autoload' => true,
+			'requires' => 'UserAuthenticator'
+		);
+	}
+}

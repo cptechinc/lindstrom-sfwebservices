@@ -14,12 +14,24 @@ class UserAuthenticator extends WireData implements Module {
 		'createorderend'
 	);
 
+	const ENDPOINTS_PORTAL = array(
+		'createquote'
+	);
+
 	public function __construct() {
 		$this->authenticated = false;
 		$this->username      = '';
 		$this->message       = '';
 		$this->error         = false;
 		$this->endpoint      = '';
+	}
+
+	public function get_user($username) {
+		return $this->wire('users')->get("name=$username");
+	}
+
+	public function user_exists($username) {
+		return boolval($this->wire('users')->find("name=$username")->count());
 	}
 
 	/**
@@ -31,43 +43,34 @@ class UserAuthenticator extends WireData implements Module {
 		$rm = strtolower($input->requestMethod());
 		$values = $input->$rm;
 
-
 		if (empty($values->text(self::FIELD_USERNAME)) || empty($values->text(self::FIELD_USERNAME))) {
 			$this->authenticated = false;
 			$this->error         = true;
 		} else {
 			$this->username = $values->text(self::FIELD_USERNAME);
 			$this->authenticated = $this->authenticate_user($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_PASSWORD));
-
-			if (!in_array($this->endpoint, self::ENDPOINTS_WITHOUT_CUSTOMERNUMBER) && $this->authenticated == true) {
-				$this->authenticated = $this->authenticate_user_customer($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_CUSTOMER));
-			}
-			$this->error = !$this->authenticated;
 		}
 
 		if (!$this->authenticated) {
 			$this->message = 'Customer is not authorized';
 		}
+		$this->error = !$this->authenticated;
 		return $this->authenticated;
 	}
 
 	/**
-	 * Return if User was able to log in
+	 * Return if User was able to log in OR is loggedin
 	 * @param  string $username ProcessWire User Name
 	 * @param  string $password Password
 	 * @return bool
 	 */
 	public function authenticate_user($username, $password) {
-		if ($this->wire('users')->find("name=$username")->count()) {
-			$user = $this->wire('users')->get("name=$username");
+		if ($this->user_exists($username)) {
+			$user = $this->get_user($username);
 
 			if ($user->hasRole(SfWebServicesUserAdmin::ROLE_APIAUTHORIZED)) {
-				if ($user->id == $this->wire('user')->id) {
+				if ($this->wire('session')->login($username, $password)) {
 					return true;
-				} else {
-					if ($this->wire('session')->login($username, $password)) {
-						return true;
-					}
 				}
 			}
 		}
@@ -81,11 +84,11 @@ class UserAuthenticator extends WireData implements Module {
 	 * @return bool
 	 */
 	public function authenticate_user_customer($username, $customerNumber) {
-		if ($this->wire('users')->find("name=$username")->count()) {
-			$user = $this->wire('users')->get("name=$username");
+		if ($this->user_exists($username)) {
+			$user = $this->get_user($username);
 			$custID = strlen($customerNumber) > 6 ? substr($customerNumber, 0, 6) : $customerNumber;
 
-			if (empty($user->customerNumber) || $user->customerNumber == $custID) {
+			if ($user->customerNumber == $custID) {
 				return true;
 			}
 		}
@@ -95,18 +98,17 @@ class UserAuthenticator extends WireData implements Module {
 /* =============================================================
 	ProcessWire Module Functions
 ============================================================= */
-	/**
-	 * ProcessWire Module Info
-	 *
-	 * @return void
-	 */
 	public static function getModuleInfo() {
 		return array(
 			'title' => 'Sf Webservices User Authenticator',
 			'version' => 101,
 			'summary' => 'Handles User Authentication',
 			'singular' => true,
-			'autoload' => true
+			'autoload' => true,
+			'installs' => array(
+				'UserAuthenticatorApi',
+				'UserAuthenticatorPortal'
+			)
 		);
 	}
 }

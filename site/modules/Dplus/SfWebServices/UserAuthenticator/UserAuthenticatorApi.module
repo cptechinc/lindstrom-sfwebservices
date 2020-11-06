@@ -1,0 +1,67 @@
+<?php namespace ProcessWire;
+
+/**
+ * class SfWebServicesUserAdmin
+ *
+ * Handles User Administration
+ */
+class UserAuthenticatorApi extends UserAuthenticator implements Module {
+	const ENDPOINTS_WITHOUT_CUSTOMERNUMBER = array(
+		'createorderend'
+	);
+
+	/**
+	 * Authenticates User Input
+	 * @param  WireInput $input [description]
+	 * @return bool
+	 */
+	public function authenticate_input(WireInput $input) {
+		$rm = strtolower($input->requestMethod());
+		$values = $input->$rm;
+
+		if (parent::authenticate_input($input)) {
+			$this->authenticated = $this->authenticate_user_api($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_CUSTOMER));
+		}
+		$this->error = !$this->authenticated;
+		return $this->authenticated;
+	}
+
+	/**
+	 * Returns if API User is authenticated
+	 * @param  string $username ProcessWire User Name
+	 * @param  string $password Password
+	 * @return bool
+	 */
+	public function authenticate_user_api($username, $customerNumber) {
+		if ($this->user_exists($username)) {
+			$user = $this->get_user($username);
+
+			if (!$user->has_api()) {
+				return false;
+			}
+
+			// VALIDATE CUSTOMER Number if Endpoint requires it
+			if (!in_array($this->endpoint, self::ENDPOINTS_WITHOUT_CUSTOMERNUMBER) && $this->authenticated == true) {
+				if (!empty($user->customerNumber)) {
+					return $this->authenticate_user_customer($username, $customerNumber);
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+/* =============================================================
+	ProcessWire Module Functions
+============================================================= */
+	public static function getModuleInfo() {
+		return array(
+			'title' => 'Sf Webservices User Authenticator for API',
+			'version' => 101,
+			'summary' => 'Handles User Authentication for API',
+			'singular' => true,
+			'autoload' => true,
+			'requires' => 'UserAuthenticator'
+		);
+	}
+}
