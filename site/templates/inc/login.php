@@ -4,8 +4,8 @@
 	}
 ?>
 <div class="container-fluid page" id="login-container">
-	<div class="col-sm-6 mx-auto">
-		<h2>Login to WebServices</h2>
+	<div class="col-sm-6 mx-auto text-center">
+		<img src="<?= $config->applogo->url; ?>" alt="">
 	</div>
 	<div class="col-sm-6 mx-auto">
 		<?php if (!$user->loggedin) : ?>

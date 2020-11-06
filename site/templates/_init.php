@@ -22,3 +22,5 @@ $config->scripts->append(hash_templatefile('scripts/lib/jquery.js'));
 $config->scripts->append(hash_templatefile('scripts/lib/popper.js'));
 $config->scripts->append(hash_templatefile('scripts/lib/bootstrap.min.js'));
 $config->scripts->append(hash_templatefile('scripts/lib/jquery-validate.js'));
+
+$config->applogo = $pages->get('/')->images->first();
