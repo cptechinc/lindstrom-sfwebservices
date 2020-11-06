@@ -4,7 +4,7 @@
 	$data = $args['data'];
 	$config = $args['config'];
 
-	$formfields = ['customerItem', 'itemNumber', 'requestQuantity'];
+	$formfields = ['customerItem', 'itemNumber', 'requestQuantity', 'requestUOM', 'customerNumber'];
 	$neededfields = array_diff($endpoint->get_fields(), $formfields);
 ?>
 <div class="row">
@@ -15,9 +15,10 @@
 		<h4>User: <?= $data['IDCLogin']; ?></h4>
 
 		<form action="<?= $page->url; ?>" method="POST">
-			<input type="hidden" class="form-control" name="IDCLogin" value="<?= $data['IDCLogin']; ?>">
-			<input type="hidden" class="form-control" name="IDCPassword" value="<?= $data['IDCPassword']; ?>">
-			<input type="hidden" class="form-control" name="customerNumber" value="<?= $data['customerNumber']; ?>">
+			<input type="hidden" name="IDCLogin" value="<?= $data['IDCLogin']; ?>">
+			<input type="hidden" name="IDCPassword" value="<?= $data['IDCPassword']; ?>">
+			<input type="hidden" name="customerNumber" value="<?= $data['customerNumber']; ?>">
+			<input type="hidden" name="requestUOM" value="<?= $data['requestUOM']; ?>">
 
 			<table class="table">
 				<tr>

@@ -12,10 +12,10 @@
 </div>
 <div class="row">
 	<div class="col-sm-6">
-		<?= render_php("{$config->paths->templates}inc/pricing/results/header.php", $args = array('quote' => $quote)); ?>
+		<?= render_php("{$config->paths->templates}inc/portal/pricing/results/header.php", $args = array('quote' => $quote)); ?>
 	</div>
 	<div class="col-sm-6">
 		<H3>Availability</H3>
-		<?= render_php("{$config->paths->templates}inc/pricing/results/avail.php", $args = array('availability' => $json['availability'])); ?>
+		<?= render_php("{$config->paths->templates}inc/portal/pricing/results/avail.php", $args = array('availability' => $json['availability'])); ?>
 	</div>
 </div>
