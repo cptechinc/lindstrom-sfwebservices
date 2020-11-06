@@ -20,15 +20,20 @@ class SfWebServices extends WireData implements Module {
 	// Enable/disable debugging output
 	protected $debug = false;
 
-	// Class for authenticating API Credentials
-	protected $auththenticator = false;
+	// Class for authenticating Credentials for API / Portal
+	protected $authenticator = false;
 
+	/**
+	 * Set Debug Value
+	 * @param  bool   $debug
+	 * @return void
+	 */
 	public function debug($debug = false) {
 		$this->debug = false;
 	}
 
 	public function process($endpoint, WireInput $input) {
-		$this->authenticator = $this->wire('modules')->get('UserAuthenticator');
+		$this->authenticator = $this->wire('modules')->get('UserAuthenticatorApi');
 		$this->authenticator->endpoint = $endpoint;
 
 		if ($this->authenticator->authenticate_input($input)) {
