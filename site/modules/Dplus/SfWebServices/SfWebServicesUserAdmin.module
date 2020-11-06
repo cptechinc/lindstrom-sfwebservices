@@ -76,7 +76,7 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		$user->addRole(self::ROLE_WEBSERVICEUSER);
 		return $user->save();
 	}
-	
+
 /* =============================================================
 	CRUD Update Functions
 ============================================================= */
@@ -146,7 +146,7 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 				$this->edit_user_password($input);
 				break;
 			case 'delete-user':
-				$this->delete_user($input);
+				$this->delete_user_input($input);
 				break;
 		}
 	}
@@ -197,7 +197,7 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 	 * @param  WireInput $input
 	 * @return void
 	 */
-	public function delete_user(WireInput $input) {
+	public function delete_user_input(WireInput $input) {
 		$success = false;
 		$rm = strtolower($input->requestMethod());
 		$username = $input->$rm->name('username');
