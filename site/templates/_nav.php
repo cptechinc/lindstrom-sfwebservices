@@ -57,7 +57,9 @@
 			</ul>
 		<?php endif; ?>
 		<form class="form-inline my-2 my-lg-0">
-			<a href="<?= $pages->logoutURL(); ?>" class="btn btn-danger">Logout</a>
+			<?php if ($user->isLoggedin()) : ?>
+				<a href="<?= $pages->logoutURL(); ?>" class="btn btn-danger">Logout</a>
+			<?php endif; ?>
 		</form>
 	</div>
 </nav>
