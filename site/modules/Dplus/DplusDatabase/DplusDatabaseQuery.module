@@ -1,0 +1,48 @@
+<?php namespace ProcessWire;
+
+use atk4\dsql\Query;
+
+/**
+ * DplusDatabaseQuery
+ *
+ * Class for Creating Connection to the data(x) databases for Dplus
+ * NOTE these are the DPLUS main files, not pertaining to a session
+ */
+class DplusDatabaseQuery extends WireData implements Module {
+	/**
+	 * Return PDO Connection
+	 * @return Database
+	 */
+	public function connection() {
+		return $this->wire(DplusDatabase::CONNECTION_NAME_PW);
+	}
+
+	/**
+	 * Return PDOStatement after executing query
+	 * @param  Query         $q Query to Prepare and Execute
+	 * @return PDOStatement
+	 */
+	public function execute(Query $q) {
+		$pdo = $this->connection();
+		$stmt = $pdo->prepare($q->render());
+		$stmt->execute($q->params);
+		return $stmt;
+	}
+
+/* =============================================================
+	ProcessWire Module Functions
+============================================================= */
+
+	public static function getModuleInfo() {
+		$infoArray = array(
+			'title' => __('Dplus Database Query'),
+			'version' => 115,
+			'summary' => __("Queries the Dplus database"),
+			'autoload' => true,
+			'singular' => true,
+			'author' => 'pauldro',
+			'icon' => 'database'
+		);
+		return $infoArray;
+	}
+}
