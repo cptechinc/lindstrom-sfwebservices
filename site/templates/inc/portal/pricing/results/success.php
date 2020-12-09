@@ -2,10 +2,11 @@
 	$config = $args['config'];
 	$page = $args['page'];
 	$json = $args['json'];
+	$customer = $args['customer'];
 	$quote = $json['quote'];
 	$availability = $json['availability'];
 ?>
-<h2>Quote Results</h2>
+<h2>Quote Results for <?= $customer['name']; ?> (<?= $customer['custid']; ?>)</h2>
 <hr>
 <div class="form-group">
 	<a href="<?= $page->url; ?>" class="btn btn-dark">New Quote</a>

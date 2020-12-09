@@ -7,6 +7,7 @@
 		$body = render_php("{$config->paths->templates}inc/portal/pricing/results/error.php", $args);
 	} else {
 		$args['json'] = $json['data'];
+		$args['customer'] = $json['customer'];
 		$body = render_php("{$config->paths->templates}inc/portal/pricing/results/success.php", $args);
 	}
 ?>
