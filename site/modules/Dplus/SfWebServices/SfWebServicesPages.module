@@ -187,13 +187,13 @@ class SfWebServicesPages extends PwPages implements Module {
 			$pages  = $event->object;
 			$event->return = $pages->get('template=login')->url."?logout=y";
 		});
+
+		$this->addHook("Pages::logout_portalURL", function($event) {
+			$pages  = $event->object;
+			$event->return = $pages->get('template=portal-user')->url."?action=logout";
+		});
 	}
 
-	/**
-	 * ProcessWire Module Info
-	 *
-	 * @return void
-	 */
 	public static function getModuleInfo() {
 		return array(
 			'title' => 'Dpluso Pages Modules',
