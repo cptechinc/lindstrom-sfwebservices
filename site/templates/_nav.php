@@ -4,8 +4,10 @@
 	$apitest  = $pages->get('template=api, name=tests');
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-	<a class="navbar-brand" href="<?= $homepage->url; ?>"><?= $homepage->headline; ?></a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-navigation" aria-controls="navbar-navigation" aria-expanded="false" aria-label="Toggle navigation">
+	<a class="navbar-brand" href="<?= $homepage->url; ?>">
+		<?= $homepage->headline; ?>
+	</a>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-navigation" aria-controls="navbar-navigation" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
 	</button>
 
@@ -57,8 +59,14 @@
 			</ul>
 		<?php endif; ?>
 		<form class="form-inline my-2 my-lg-0">
-			<?php if ($user->isLoggedin()) : ?>
-				<a href="<?= $pages->logoutURL(); ?>" class="btn btn-danger">Logout</a>
+			<?php if ($user->has_portal()) : ?>
+				<a href="<?= $pages->logout_portalURL(); ?>" class="btn btn-danger">
+					Logout
+				</a>
+			<?php else : ?>
+				<a href="<?= $pages->logoutURL(); ?>" class="btn btn-danger">
+					Logout
+				</a>
 			<?php endif; ?>
 		</form>
 	</div>
