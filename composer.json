@@ -4,7 +4,7 @@
 	"description": "Lindstrom Stelfast Web Services",
 	"keywords": [],
 	"license": "MPL-2.0",
-	"homepage": "",
+	"homepage": "http://example.com",
 	"authors": [
 		{
 			"name": "Paul Gomez",
@@ -16,7 +16,7 @@
 	"require": {
 		"php": ">=5.3.8",
 		"ext-gd": "*",
-		"propel/propel": "~2.0@dev"
+		"atk4/dsql": "1.1"
 	},
 	"autoload": {
 		"files": [ "wire/core/ProcessWire.php" ]
