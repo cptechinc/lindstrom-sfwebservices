@@ -1,0 +1,54 @@
+<?php namespace ProcessWire;
+
+use atk4\dsql\Query;
+use atk4\dsql\Expression;
+
+/**
+ * DplusDatabaseQuery
+ *
+ * Class for Creating Connection to the data(x) databases for Dplus
+ * NOTE these are the DPLUS main files, not pertaining to a session
+ */
+class QueryCustomer extends DplusDatabaseQuery implements Module {
+	const TABLE = 'ar_cust_mast';
+
+	const COLUMNMAP = [
+		'custid' => 'ArcuCustId',
+		'name'   => 'ArcuName'
+	];
+
+	public function query() {
+		return (new Query())->table(self::TABLE);
+	}
+
+	/**
+	 * Return Customer
+	 * @param  string $custID Customer ID
+	 * @return array
+	 */
+	function getCustomer($custID) {
+		$q = $this->query();
+		$q->field([$q->expr("ArcuCustId AS custid"), $q->expr("ArcuName AS name")]);
+		$q->where('ArcuCustId', $custID);
+		$stmt = $this->execute($q);
+		return $stmt->fetch(\PDO::FETCH_ASSOC);
+	}
+
+/* =============================================================
+	ProcessWire Module Functions
+============================================================= */
+
+	public static function getModuleInfo() {
+		$infoArray = array(
+			'title' => __('Dplus Database Query'),
+			'version' => 115,
+			'summary' => __("Queries the Dplus database"),
+			'autoload' => true,
+			'singular' => true,
+			'author' => 'pauldro',
+			'icon' => 'database',
+			'requires' => array('DplusDatabaseQuery')
+		);
+		return $infoArray;
+	}
+}
