@@ -97,17 +97,14 @@ class SfWebServices extends WireData implements Module {
 		}
 
 		if ($this->setup_class('request') !== true) {
-			// $this->error('Cannot instantiate Request class.');
 			return false;
 		}
 
 		if ($this->setup_class('dplus') !== true) {
-			// $this->error('Cannot instantiate Dplus Communications class.');
 			return false;
 		}
 
 		if ($this->setup_class('response') !== true) {
-			// $this->error('Cannot instantiate Response class.');
 			return false;
 		}
 
@@ -207,7 +204,6 @@ class SfWebServices extends WireData implements Module {
 				$name = 'Response';
 				break;
 		}
-
 		return $name;
 	}
 
@@ -216,8 +212,6 @@ class SfWebServices extends WireData implements Module {
 			$this->endpoint = self::ENDPOINTS[$endpoint];
 			return true;
 		}
-
-		// $this->error("Invalid WebService $endpoint");
 		return false;
 	}
 

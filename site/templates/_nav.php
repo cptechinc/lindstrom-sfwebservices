@@ -31,6 +31,14 @@
 					</li>
 				<?php endif; ?>
 
+				<?php if ($user->hasPermission('logs-view')) : ?>
+					<li class="nav-item">
+						<a class="nav-link" href="<?= $pages->get('template=logs')->url; ?>">
+							<?= $pages->get('template=logs')->title; ?>
+						</a>
+					</li>
+				<?php endif; ?>
+
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="api-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						<?= $apimenu->title; ?>

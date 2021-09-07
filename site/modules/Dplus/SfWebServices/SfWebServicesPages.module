@@ -66,6 +66,10 @@ class SfWebServicesPages extends PwPages implements Module {
 		'portal-pricing' => array(
 			'name'   => 'pricing',
 			'fields' => array()
+		),
+		'logs' => array(
+			'name'   => 'logs',
+			'fields' => array()
 		)
 	);
 
@@ -176,7 +180,21 @@ class SfWebServicesPages extends PwPages implements Module {
 			'pw_template'  => 'portal-pricing',
 			'parent'   => '/app/',
 			'apiservice'  => 'createquote'
-		)
+		),
+		'logs' => array(
+			'template' => 'logs',
+			'name'     => 'logs',
+			'title'    => 'Logs',
+			'summary'  => 'View Logs',
+			'parent'   => '/'
+		),
+		'log-session' => array(
+			'template' => 'log',
+			'name'     => 'session',
+			'title'    => 'Session',
+			'summary'  => 'View Session Logs',
+			'parent'   => '/log/'
+		),
 	);
 
 /* =============================================================

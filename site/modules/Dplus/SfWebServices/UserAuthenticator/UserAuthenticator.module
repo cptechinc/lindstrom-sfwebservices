@@ -26,6 +26,14 @@ class UserAuthenticator extends WireData implements Module {
 		$this->endpoint      = '';
 	}
 
+	const LOG_FILE = 'login';
+	const LOG_TEMPLATE = [
+		'ip'      => '',
+		'user'    => '',
+		'success' => '',
+		'url'     => ''
+	];
+
 	public function get_user($username) {
 		return $this->wire('users')->get("name=$username");
 	}
@@ -49,6 +57,10 @@ class UserAuthenticator extends WireData implements Module {
 		} else {
 			$this->username = $values->text(self::FIELD_USERNAME);
 			$this->authenticated = $this->authenticate_user($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_PASSWORD));
+		}
+
+		if ($this->authenticated) {
+			$this->log_success($input, $this->wire('user'));
 		}
 
 		if (!$this->authenticated) {
@@ -97,6 +109,18 @@ class UserAuthenticator extends WireData implements Module {
 			}
 		}
 		return false;
+	}
+
+	protected function log_success(WireInput $input, User $user) {
+		$session = $this->wire('session');
+		$record = self::LOG_TEMPLATE;
+		$record = [
+			'ip'      => $session->getIP(),
+			'success' => $user->isLoggedIn() ? 'true' : 'false',
+		];
+		$line = implode("|", array_values($record));
+
+		$this->wire('log')->save(self::LOG_FILE, $line);
 	}
 
 /* =============================================================
