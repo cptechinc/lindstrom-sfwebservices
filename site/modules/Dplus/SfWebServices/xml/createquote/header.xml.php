@@ -11,7 +11,7 @@
 <UnitWeight><?= $quote['UnitWeight']; ?></UnitWeight>
 <ExtendedWeight><?= $quote['ExtendedWeight']; ?></ExtendedWeight>
 <BaseQtyUOM><?= $quote['BaseQtyUOM']; ?></BaseQtyUOM>
-<NextPODate><?= $quote['NextPODate']; ?></NextPODate>
+<NextPODate>9999/12/31</NextPODate>
 <Discontinued><?= $quote['Discontinued']; ?></Discontinued>
 <PackQTY><?= $quote['PackQTY']; ?></PackQTY>
 <PiecesPerLB><?= $quote['PiecesPerLB']; ?></PiecesPerLB>
