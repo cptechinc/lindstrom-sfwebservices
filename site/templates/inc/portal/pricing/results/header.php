@@ -56,7 +56,7 @@
 	</tr>
 	<tr>
 		<td>NextPODate</td>
-		<td><?= $quote['NextPODate']; ?></td>
+		<td>9999/12/31</td>
 	</tr>
 	<tr>
 		<td>Discontinued</td>
