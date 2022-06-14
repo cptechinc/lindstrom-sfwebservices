@@ -1,5 +1,7 @@
 <?php namespace ProcessWire;
 
+include_once(__DIR__.'/vendor/autoload.php');
+
 class SfWebServices extends WireData implements Module {
 	const ENDPOINTS = array(
 		'createquote' => 'CreateQuote',
