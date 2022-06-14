@@ -1,12 +1,17 @@
 <?php namespace SfWebServices\Logs;
-
+use PDO;
 use atk4\dsql\Query_MySQL as Query;
 
 use ProcessWire\WireData;
 
+/**
+ * Logs\CreateOrder
+ * Handles Reading / Writing to Log
+ */
 class CreateOrder extends WireData {
 	const TABLE = 'log_createorder';
 
+	/** @var self **/
 	private static $instance;
 
 	/**
@@ -20,16 +25,29 @@ class CreateOrder extends WireData {
 		return self::$instance;
 	}
 
+	/**
+	 * Return PDO connection
+	 * @return PDO
+	 */
 	private function pdo() {
 		return $this->wire('database')->pdo();
 	}
 
+	/**
+	 * Return Query
+	 * @return Query
+	 */
 	private function query() {
 		$q = new Query(['connection' => $this->pdo()]);
 		$q->table(self::TABLE);
 		return $q;
 	}
 
+	/**
+	 * Return if Order has been logged as complete
+	 * @param  string $ordn Order Request #
+	 * @return bool
+	 */
 	public function exists($ordn) {
 		$q = $this->query();
 		$q->field('COUNT(*)');
@@ -37,6 +55,11 @@ class CreateOrder extends WireData {
 		return boolval($q->getOne());
 	}
 
+	/**
+	 * Insert Order
+	 * @param  string $ordn Order Request #
+	 * @return bool
+	 */
 	public function insert($ordn) {
 		if ($this->exists($ordn)) {
 			return true;
