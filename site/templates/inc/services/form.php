@@ -2,7 +2,7 @@
 	$endpoint = $args['endpoint'];
 	$page = $args['page'];
 ?>
-<form action="<?= $page->url; ?>" method="POST">
+<form action="<?= $page->url; ?>" method="GET">
 	<table class="table">
 		<tr>
 			<th>Param</th>
