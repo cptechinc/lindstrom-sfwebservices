@@ -15,6 +15,7 @@ class CreateOrderDetailRequest extends ServiceRequest {
 		'requestUOM',
 		'reqShipDate',
 		'remarks',
+		'customerItem'
 	);
 	public $requestdata = array();
 	protected $debug = false;
@@ -32,6 +33,7 @@ class CreateOrderDetailDplus extends ServiceDplus {
 		'requestUOM',
 		'reqShipDate',
 		'remarks',
+		'customerItem'
 	);
 
 	protected function create_requestdata(array $data) {
@@ -47,10 +49,10 @@ class CreateOrderDetailDplus extends ServiceDplus {
 	 * @return bool
 	 */
 	public function request(array $data) {
-		if (Logs\CreateOrder::instance()->exists($data['orderNumber'])) {
-			$this->requestarray = $data;
-			return false;
-		}
+		// if (Logs\CreateOrder::instance()->exists($data['orderNumber'])) {
+		// 	$this->requestarray = $data;
+		// 	return false;
+		// }
 		return parent::request($data);
 	}
 
@@ -72,9 +74,9 @@ class CreateOrderDetailDplus extends ServiceDplus {
 	 * @return array
 	 */
 	public function error_response($message) {
-		if (Logs\CreateOrder::instance()->exists($this->requestarray['orderNumber'])) {
-			$message = "Order has already been completed";
-		}
+		// if (Logs\CreateOrder::instance()->exists($this->requestarray['orderNumber'])) {
+		// 	$message = "Order has already been completed";
+		// }
 
 		return array(
 			"sessionid" => session_id(),
