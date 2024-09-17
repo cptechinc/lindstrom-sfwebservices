@@ -48,9 +48,10 @@ class CreateOrder extends WireData {
 	 * @param  string $ordn Order Request #
 	 * @return bool
 	 */
-	public function exists($ordn) {
+	public function exists($companynbr, $ordn) {
 		$q = $this->query();
 		$q->field('COUNT(*)');
+		$q->where('companynbr', $companynbr);
 		$q->where('sfOrdn', $ordn);
 		return boolval($q->getOne());
 	}
@@ -60,11 +61,12 @@ class CreateOrder extends WireData {
 	 * @param  string $ordn Order Request #
 	 * @return bool
 	 */
-	public function insert($ordn) {
-		if ($this->exists($ordn)) {
+	public function insert($companynbr, $ordn) {
+		if ($this->exists($companynbr, $ordn)) {
 			return true;
 		}
 		$q = $this->query();
+		$q->set('companynbr', $companynbr);
 		$q->set('sfOrdn', $ordn);
 		$q->set('datestamp', date('Y-m-d H:i:s'));
 		return $q->insert();
