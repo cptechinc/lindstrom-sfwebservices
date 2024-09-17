@@ -29,10 +29,11 @@ class CreateOrderEndDplus extends ServiceDplus {
 	 * @return bool
 	 */
 	public function request(array $data) {
-		if (Logs\CreateOrder::instance()->exists($data['orderNumber'])) {
-			$this->requestarray = $data;
-			return false;
-		}
+		$companynbr = $this->wire('user')->use_production() ? self::COMPANY_LIVE : self::COMPANY_SANDBOX;
+		// if (Logs\CreateOrder::instance()->exists($companynbr, $data['orderNumber'])) {
+		// 	$this->requestarray = $data;
+		// 	return false;
+		// }
 		return parent::request($data);
 	}
 
@@ -44,7 +45,8 @@ class CreateOrderEndDplus extends ServiceDplus {
 				$this->error("Response JSON is for a different order");
 				return false;
 			}
-			Logs\CreateOrder::instance()->insert($this->response['OrderNumber']);
+			$companynbr = $this->wire('user')->use_production() ? self::COMPANY_LIVE : self::COMPANY_SANDBOX;
+			// Logs\CreateOrder::instance()->insert($companynbr, $this->response['OrderNumber']);
 		}
 		return $result;
 	}
@@ -55,9 +57,10 @@ class CreateOrderEndDplus extends ServiceDplus {
 	 * @return array
 	 */
 	public function error_response($message) {
-		if (Logs\CreateOrder::instance()->exists($this->requestarray['orderNumber'])) {
-			$message = "Order has already been completed";
-		}
+		$companynbr = $this->wire('user')->use_production() ? self::COMPANY_LIVE : self::COMPANY_SANDBOX;
+		// if (Logs\CreateOrder::instance()->exists($companynbr, $this->requestarray['orderNumber'])) {
+		// 	$message = "Order has already been completed";
+		// }
 
 		return array(
 			"sessionid" => session_id(),
