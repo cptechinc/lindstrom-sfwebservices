@@ -22,7 +22,7 @@ class UserAuthenticatorApi extends UserAuthenticator implements Module {
 		if (parent::authenticate_input($input)) {
 			$this->authenticated = $this->authenticate_user_api($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_CUSTOMER));
 		}
-		$this->error = !$this->authenticated;
+		$this->error = $this->authenticated === false;
 		return $this->authenticated;
 	}
 
