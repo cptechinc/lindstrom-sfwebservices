@@ -1,8 +1,13 @@
 <?php
+
+use ProcessWire\WireData;
+use ProcessWire\WireInputData;
 	foreach ($args as $variable => $value) {
 		$$variable = $value;
 	}
 ?>
+
+
 
 <div class="row mb-3">
 	<div class="col-sm-9">
@@ -18,16 +23,28 @@
 		<tr>
 			<th>Date / Time</th>
 			<th>User</th>
-			<th>URL</th>
+			<th>Endpoint</th>
+			<th>Data</th>
 		</tr>
 	</thead>
 	<tbody>
 		<?php foreach ($lines as $line) : ?>
 			<?php $entry = explode("\t", $line); ?>
+			<?php $url = parse_url($entry[2]); ?>
+			<?php $paths = explode('/', $url['path']); ?>
+			<?php $endpoint = $paths[sizeof($paths) - 2]; ?>
+
+			<?php $queries = []; ?>
+			<?php parse_str($url['query'], $queries); ?>
+			<?php $queries['IDCPassword'] = '--'; ?>
+
 			<tr>
 				<td><?= $entry[0]; ?></td>
 				<td><?= $entry[1]; ?></td>
-				<td class="w-50"><?= $entry[2]; ?></td>
+				<td><?= $endpoint; ?></td>
+				<td>
+					<?= implode(', ', explode('&', http_build_query($queries))); ?>
+				</td>
 			</tr>
 		<?php endforeach; ?>
 	</tbody>

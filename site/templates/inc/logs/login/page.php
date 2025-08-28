@@ -20,6 +20,7 @@
 			<th>IP Address</th>
 			<th>User</th>
 			<th>Success</th>
+			<th>Endpoint</th>
 			<th>URL</th>
 		</tr>
 	</thead>
@@ -27,12 +28,23 @@
 		<?php foreach ($lines as $line) : ?>
 			<?php $entry = explode("\t", $line); ?>
 			<?php $logextra = explode('|', $entry[3]); ?>
+			<?php $url = parse_url($entry[2]); ?>
+			<?php $paths = explode('/', $url['path']); ?>
+			<?php $endpoint = $paths[sizeof($paths) - 2]; ?>
+
+			<?php $queries = []; ?>
+			<?php parse_str($url['query'], $queries); ?>
+			<?php $queries['IDCPassword'] = '--'; ?>
+
 			<tr>
 				<td><?= $entry[0]; ?></td>
 				<td><?= $logextra[0]; ?></td>
 				<td><?= $entry[1]; ?></td>
 				<td><?= $logextra[1]; ?></td>
-				<td class="w-50"><?= $entry[2]; ?></td>
+				<td><?= $endpoint; ?></td>
+				<td>
+					<?= implode('<br>', explode('&', http_build_query($queries))); ?>
+				</td>
 			</tr>
 		<?php endforeach; ?>
 	</tbody>
