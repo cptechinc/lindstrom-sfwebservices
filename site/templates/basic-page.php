@@ -2,7 +2,7 @@
 	<div class="jumbotron jumbotron-pagetitle">
 		<h1 class="display-4"><?= $page->get('headline|title'); ?></h1>
 	</div>
-	<div class='container page pt-3'>
+	<div class='container page pt-3 fuelux'>
 		<?= $page->body; ?>
 	</div>
 <?php include('./_foot.php'); ?>
