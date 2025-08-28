@@ -35,3 +35,45 @@ footer {
 	z-index: 12;
 	display: none;
 }
+
+/**************************************
+	FuelUX
+**************************************/
+.fuelux .datepicker-calendar-days td button, .fuelux .datepicker-calendar-header .title {
+	cursor: pointer;
+}
+
+.fuelux .datepicker-calendar-days td.current-day span {
+	background: #FCF885;
+}
+.fuelux .datepicker-calendar-days td.selected span {
+	background: #29335C;
+}
+.fuelux .datepicker-calendar-days td:hover span {
+	background: #29335C;
+}
+.fuelux .datepicker-calendar-days td b:hover, .fuelux .datepicker-calendar-days td button:hover {
+	color: #fff;
+}
+.fuelux .datepicker-calendar-days td.selected b, 
+.fuelux .datepicker-calendar-days td.selected button {
+	color: #fff;
+}
+.fuelux .datepicker-calendar-days td.selected b:hover, .fuelux .datepicker-calendar-days td.selected button:hover {
+	color: #29335C;
+}
+
+.fuelux .datepicker-calendar-days td.current-day span {
+	background: #A6CFD5;
+}
+
+.fuelux .datepicker-calendar-days td.current-day button {
+	color: #fff;
+}
+.fuelux .datepicker-calendar-days td.selected.current-day button {
+	color: #fff;
+}
+
+.fuelux .datepicker-calendar-days td.selected.current-day button {
+	color: #fff;
+}
