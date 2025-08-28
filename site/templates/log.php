@@ -26,6 +26,17 @@ if ($input->get->offsetExists('filter')) {
 
 $lines = $log->getLines($page->name, $options);
 
+if ($get->offsetExists('download')) {
+    $dir = $files->tempDir('download');
+    $newFile = $dir->get() . $page->name . '.txt';
+    $content = implode('\n', array_values($lines));
+    file_put_contents($newFile, $content);
+
+    $http = new WireHttp();
+    $http->sendFile($newFile, ['forceDownload' => true]);
+    exit;
+}
+
 $firstKeys = explode('/', array_keys($lines)[0]);
 
 $totalLogEntries = $firstKeys[1];

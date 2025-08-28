@@ -9,7 +9,7 @@
 		<?php include "{$config->paths->templates}inc/logs/date-form.php"; ?>
 	</div>
 	<div class="col-sm-3">
-		<a href="./?download=true" class="btn btn-sm btn-primary position-absolute bottom-0">Download .txt</a>
+		<a href="<?= $input->generateUrl(['addToQueryString' => ['download' => 'true']]); ?>" class="btn btn-sm btn-primary position-absolute bottom-0">Download .txt</a>
 	</div>
 </div>
 
