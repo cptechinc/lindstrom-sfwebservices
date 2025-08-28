@@ -4,37 +4,12 @@
 	}
 ?>
 
-<form action="./" class="mb-3" method="GET">
-	<input type="hidden" name="filter" value="filter">
-
-	<div class="form-row">
-		<div class="col-sm-3">
-			<label for="fromDate">From Date</label>
-		</div>
-		<div class="col-sm-3">
-			<label for="toDate">To Date</label>
-		</div>
+<div class="row mb-3">
+	<div class="col-sm-9">
+		<?php include "{$config->paths->templates}inc/logs/date-form.php"; ?>
 	</div>
-	<div class="form-row">
-		<div class="col-sm-3">
-			<?= render_php("{$config->paths->templates}inc/util/date-picker.php", ['name' => 'fromDate', 'val' => $input->get->text('fromDate'), 'label' => 'From Date']) ; ?>
-		</div>
-		<div class="col-sm-3">
-			<?= render_php("{$config->paths->templates}inc/util/date-picker.php", ['name' => 'toDate', 'val' => $input->get->text('toDate'), 'label' => 'To Date']) ; ?>
-		</div>
-		<div class="col-sm-3">
-			<button type="submit" class="btn btn-sm btn-primary">Submit</button>
-
-			<?php if ($input->get->offsetExists('filter')) : ?>
-				<a href="./" class="btn btn-sm btn-warning">Clear Filter</a>
-			<?php endif; ?>
-		</div>
-	</div>
-</form>
-
-<div class="row">
 	<div class="col-sm-3">
-		<a href="./?download=true" class="btn btn-primary">Download .txt</a>
+		<a href="./?download=true" class="btn btn-sm btn-primary position-absolute bottom-0">Download .txt</a>
 	</div>
 </div>
 
