@@ -11,6 +11,10 @@ use ProcessWire\WireLog;
 
 $get = $input->get;
 
+if ($get->offsetExists('prune')) {
+    $log->prune($page->name, 365);
+}
+
 $options = [];
 
 if ($input->get->offsetExists('filter')) {
