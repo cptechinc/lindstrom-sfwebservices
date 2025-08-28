@@ -1,0 +1,57 @@
+<?php namespace ProcessWire;
+
+/**
+ * Class for Editing URLs
+ */
+class WireInputHelper extends WireData implements Module {
+/* =============================================================
+	ProcessWire Module Functions
+============================================================= */
+	/**
+	 * ProcessWire Module Info
+	 *
+	 * @return array
+	 */
+	public static function getModuleInfo() {
+		return [
+			'title' => 'WireInput Helper',
+			'version' => 101,
+			'summary' => 'adds Hooks to WireInput',
+			'singular' => true,
+			'autoload' => true,
+		];
+	}
+
+    public function init() {
+		$this->addHook('WireInput::generateUrl', function($event) {
+			$input = $event->object;
+			$event->return = $this->generateUrl($input, $event->arguments(0));
+		});
+	}
+/* =============================================================
+	ProcessWire Module Functions
+============================================================= */
+    protected function generateUrl(WireInput $input, $options = []) {
+        $defaults = [
+			'includeQueryString' => true,
+			'removeFromQueryString' => [],
+			'addToQueryString'      => [],
+		];
+        $options = array_merge($defaults, $options);
+        if ($options['includeQueryString'] === false) {
+            return $input->url();
+        }
+        $get = $input->get;
+
+        foreach ($options['removeFromQueryString'] as $key) {
+            $get->remove($key);
+        }
+        foreach ($options['addToQueryString'] as $key => $value) {
+            $get->$key = $value;
+        }
+        if ($get->count() == 0) {
+            return $input->url();
+        }
+        return $input->url() . "?" . $get->queryString();
+    }
+}
