@@ -43,7 +43,7 @@ use ProcessWire\WireInputData;
 				<td><?= $entry[1]; ?></td>
 				<td><?= $endpoint; ?></td>
 				<td>
-					<?= implode(', ', explode('&', http_build_query($queries))); ?>
+					<?= implode('<br>', explode('&', http_build_query($queries))); ?>
 				</td>
 			</tr>
 		<?php endforeach; ?>
