@@ -35,7 +35,7 @@ use ProcessWire\WireInputData;
 			<?php $endpoint = $paths[sizeof($paths) - 2]; ?>
 
 			<?php $queries = []; ?>
-			<?php parse_str($url['query'], $queries); ?>
+			<?php parse_str(array_key_exists('query', $url) ? $url['query'] : '', $queries); ?>
 			<?php $queries['IDCPassword'] = '--'; ?>
 
 			<tr>
