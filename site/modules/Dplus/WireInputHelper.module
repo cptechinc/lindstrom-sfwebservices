@@ -28,20 +28,46 @@ class WireInputHelper extends WireData implements Module {
 			$event->return = $this->generateUrl($input, $event->arguments(0));
 		});
 	}
+
 /* =============================================================
 	ProcessWire Module Functions
 ============================================================= */
+	protected function paginateUrlPath(WireInput $input, $pagenbr = 1) {
+		$url = $input->url();
+		$page = $this->wire('page');
+
+		if (strpos($url, 'page') !== false) {
+			$regex = "((page)\d{1,3})";
+			$replace = ($pagenbr > 1) ? "page".$pagenbr : "";
+			$url = preg_replace($regex, $replace, $url);
+		} else {
+			if (count($input->urlSegments())) {
+				$last = count($input->urlSegments());
+				$insertafter = '/'.$input->urlSegment($last).'/';
+			} else {
+				$insertafter = "/$page->name/";
+			}
+			$regex = "(($insertafter))";
+			$replace = ($pagenbr > 1) ? $insertafter."page".$pagenbr."/" : $insertafter;
+			$url = preg_replace($regex, $replace, $url);
+		}
+		return $url;
+	}
     protected function generateUrl(WireInput $input, $options = []) {
         $defaults = [
-			'includeQueryString' => true,
+			'includeQueryString'    => true,
 			'removeFromQueryString' => [],
 			'addToQueryString'      => [],
+			'pagenbr'               => 1,
 		];
         $options = array_merge($defaults, $options);
+		$urlPath = $this->paginateUrlPath($input, $options['pagenbr']);
+
         if ($options['includeQueryString'] === false) {
-            return $input->url();
+            return $urlPath;
         }
-        $get = $input->get;
+        $get = new WireInputData();
+		$get->setArray($input->get->getArray());
 
         foreach ($options['removeFromQueryString'] as $key) {
             $get->remove($key);
@@ -50,8 +76,8 @@ class WireInputHelper extends WireData implements Module {
             $get->$key = $value;
         }
         if ($get->count() == 0) {
-            return $input->url();
+            return $urlPath;
         }
-        return $input->url() . "?" . $get->queryString();
+        return $urlPath . "?" . $get->queryString();
     }
 }
