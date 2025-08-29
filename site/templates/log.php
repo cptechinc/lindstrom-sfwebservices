@@ -39,9 +39,14 @@ if ($get->offsetExists('download')) {
     exit;
 }
 
-$firstKeys = explode('/', array_keys($lines)[0]);
+$totalLogEntries = 0;
 
-$totalLogEntries = $firstKeys[1];
+if (count($lines) > 0) {
+    $firstKeys = explode('/', array_keys($lines)[0]);
+
+    $totalLogEntries = $firstKeys[1];
+}
+
 
 $page->body .= render_php("{$config->paths->templates}inc/logs/$page->name/page.php", ['page' => $page, 'lines' => $lines, 'input' => $input, 'config' => $config]);
 $page->body .= render_php("{$config->paths->templates}inc/util/paginator.php", ['page' => $page, 'input' => $input, 'totalLogEntries' => $totalLogEntries]);
