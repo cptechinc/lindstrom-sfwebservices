@@ -32,7 +32,7 @@ class PwPages extends WireData implements Module {
 	);
 
 	public function paginateInputUrl(WireInput $input, $pagenbr) {
-		$url = $input->url();
+		$url = $input->url(true);
 		$page = $this->wire('page');
 
 		if (strpos($url, 'page') !== false) {
