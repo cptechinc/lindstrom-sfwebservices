@@ -11,7 +11,7 @@
 	<div>
 		<ul class="pagination">
 			<li class="page-item <?= ($input->pageNum == 1) ? 'disabled' : '' ?>">
-				<a href="<?= $input->paginateUrl($input->pageNum - 1); ?>" class="page-link paginator-link" aria-label="Previous">
+				<a href="<?= $input->generateUrl(['pagenbr' => $input->pageNum - 1]); ?>" class="page-link paginator-link" aria-label="Previous">
 					<span aria-hidden="true">&laquo;</span>
 				</a>
 			</li>
@@ -24,7 +24,7 @@
 					<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
 						<?php for ($i = 1; $i < $totalPages; $i++) : ?>
 							<?php if ($i > 0) : ?>
-								<a class="dropdown-item paginator-link <?= ($input->pageNum == $i) ? 'active' : '' ?>" href="<?= $input->paginateUrl($i) ?>">
+								<a class="dropdown-item paginator-link <?= ($input->pageNum == $i) ? 'active' : '' ?>" href="<?= $input->generateUrl(['pagenbr' => $i]) ?>">
 									<?= $i ?>
 								</a>
 							<?php endif; ?>
@@ -34,7 +34,7 @@
 			</li>
 
 			<li class="page-item <?= ($input->pageNum == $totalPages) ? 'disabled' : '' ?>">
-				<a href="<?= $input->paginateUrl($input->pageNum + 1); ?>" aria-label="Next" class="page-link paginator-link">
+				<a href="<?= $input->generateUrl(['pagenbr' => $input->pageNum + 1]) ?>" aria-label="Next" class="page-link paginator-link">
 					<span aria-hidden="true">&raquo;</span>
 				</a>
 			</li>
