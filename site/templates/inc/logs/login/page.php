@@ -1,4 +1,8 @@
 <?php
+	use SfWebServices\Log\LoginLog;
+
+	/** @var LoginLog $LOG */
+
 	foreach ($args as $variable => $value) {
 		$$variable = $value;
 	}
@@ -26,24 +30,17 @@
 	</thead>
 	<tbody>
 		<?php foreach ($lines as $line) : ?>
-			<?php $entry = explode("\t", $line); ?>
-			<?php $logextra = explode('|', $entry[3]); ?>
-			<?php $url = parse_url($entry[2]); ?>
-			<?php $paths = explode('/', $url['path']); ?>
-			<?php $endpoint = $paths[sizeof($paths) - 2]; ?>
-
-			<?php $queries = []; ?>
-			<?php parse_str($url['query'], $queries); ?>
-			<?php $queries['IDCPassword'] = '--'; ?>
-
+			<?php $r = $LOG->parseLogRecord($line); ?>
 			<tr>
-				<td><?= $entry[0]; ?></td>
-				<td><?= $logextra[0]; ?></td>
-				<td><?= $entry[1]; ?></td>
-				<td><?= $logextra[1]; ?></td>
-				<td><?= $endpoint; ?></td>
+				<td><?= $r->timestamp; ?></td>
+				<td><?= $r->ipaddress; ?></td>
+				<td><?= $r->username; ?></td>
+				<td><?= $r->loginSuccess ? 'true' : 'false'; ?></td>
+				<td><?= $r->endpoint; ?></td>
 				<td>
-					<?= implode('<br>', explode('&', http_build_query($queries))); ?>
+					<?php foreach ($r->requestData as $key => $value) : ?>
+						<?= $key . '='; ?><?= in_array($key, $r::SENSITIVE_REQUEST_DATA) ? '***' : $value; ?> <br>
+					<?php endforeach; ?>
 				</td>
 			</tr>
 		<?php endforeach; ?>

@@ -1,7 +1,6 @@
 <?php namespace SfWebServices\Log;
 
 use ProcessWire\WireData;
-use ProcessWire\WireArray;
 use ProcessWire\WireLog;
 use SfWebServices\Log\Data\LogRecordList;
 
@@ -82,5 +81,4 @@ class LogUtil extends WireData {
         $timestamp = mktime(11, 59, 59, date('m', $datetime), date('d', $datetime), date('Y', $datetime));
         return $timestamp;
     }
-
 }

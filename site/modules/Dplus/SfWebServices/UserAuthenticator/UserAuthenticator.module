@@ -112,15 +112,22 @@ class UserAuthenticator extends WireData implements Module {
 	}
 
 	protected function log_success(WireInput $input, User $user) {
+		$rm = strtolower($input->requestMethod());
+		/** @var WireInputData */
+		$values = $input->$rm;
+
 		$session = $this->wire('session');
 		$record = self::LOG_TEMPLATE;
 		$record = [
 			'ip'      => $session->getIP(),
 			'success' => $user->isLoggedIn() ? 'true' : 'false',
+			$input->httpUrl(),
+			$input->requestMethod(),
+			$values->queryString()
 		];
 		$line = implode("|", array_values($record));
 
-		$this->wire('log')->save(self::LOG_FILE, $line);
+		$this->log->save(self::LOG_FILE, $line, ['showURL' => false]);
 	}
 
 /* =============================================================
