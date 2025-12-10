@@ -54,6 +54,13 @@ class SfWebServices extends WireData implements Module {
 	}
 
 	public function process($endpoint, WireInput $input) {
+		$rm = strtolower($input->requestMethod());
+		
+		/** @var WireInputData */
+		$values = $input->$rm;
+		$logData = [$this->session->getIP(), $input->httpUrl(), $input->requestMethod(), $values->queryString()];
+		$this->log->save('request', implode("|", $logData), ['showURL' => false]);
+
 		$this->authenticator = $this->authenticator();
 		$this->authenticator->endpoint = $endpoint;
 
