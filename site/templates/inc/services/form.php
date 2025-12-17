@@ -9,6 +9,15 @@
 			<th>Value</th>
 		</tr>
 		<tr>
+			<td><label for="serviceMethod">Service Method</label></td>
+			<td>
+				<select name="serviceMethod" class="form-control" id="serviceMethod">
+					<option value="GET">GET</option>
+					<option value="POST">POST</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
 			<td>
 				<label for="IDCLogin">IDCLogin</label>
 			</td>

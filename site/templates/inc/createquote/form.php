@@ -8,6 +8,7 @@
 			<th>Param</th>
 			<th>Value</th>
 		</tr>
+		
 		<?php foreach ($endpoint->get_fields() as $fieldname) : ?>
 			<tr>
 				<td>
