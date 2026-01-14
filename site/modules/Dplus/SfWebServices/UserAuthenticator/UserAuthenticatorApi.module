@@ -7,7 +7,8 @@
  */
 class UserAuthenticatorApi extends UserAuthenticator implements Module {
 	const ENDPOINTS_WITHOUT_CUSTOMERNUMBER = array(
-		'createorderend'
+		'createorderend',
+		'createquoteend',
 	);
 
 	/**

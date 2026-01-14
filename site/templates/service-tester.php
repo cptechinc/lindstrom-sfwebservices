@@ -2,8 +2,15 @@
 	$factory = $modules->get('SfWebServices');
 	$rm = strtolower($input->requestMethod());
 
+	if ($input->$rm->offsetExists('debug')) {
+		$session->set('debug', true);
+	}
+
 	if ($input->$rm->text('IDCLogin')) {
+		if ($input->$rm->offsetExists('debug') === false) {
 		header ("Content-Type:text/xml");
+	}
+		
 		$factory->process($page->service, $input);
 		echo $factory->api['response']->get_xml();
 	} else {
