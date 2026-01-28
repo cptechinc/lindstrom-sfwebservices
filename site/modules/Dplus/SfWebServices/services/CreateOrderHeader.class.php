@@ -18,10 +18,24 @@ class CreateOrderHeaderRequest extends ServiceRequest {
 		'shipVia',
 		'buyerName',
 		'confirmationEmail',
-		'remarks'
+		'remarks',
+		'overHoldForWeightThreshold'
 	);
 	public $requestdata = array();
 	protected $debug = false;
+
+	/**
+	 * Sets Data Values that will be sent to Dplus
+	 * @param  WireInput $input Input Values
+	 * @return bool
+	 */
+	public function process(WireInput $input) {
+		parent::process($input);
+		$rm = strtolower($input->requestMethod());
+
+		$this->requestdata['overHoldForWeightThreshold'] = $input->$rm->yn('overHoldForWeightThreshold');
+		return true;
+	}
 }
 
 class CreateOrderHeaderDplus extends ServiceDplus {
@@ -41,7 +55,8 @@ class CreateOrderHeaderDplus extends ServiceDplus {
 		'shipVia',
 		'buyerName',
 		'confirmationEmail',
-		'remarks'
+		'remarks',
+		'overHoldForWeightThreshold'
 	);
 
 	protected function create_requestdata(array $data) {

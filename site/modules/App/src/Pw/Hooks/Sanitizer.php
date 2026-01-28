@@ -1,0 +1,63 @@
+<?php namespace App\Pw\Hooks;
+// ProcessWire
+use ProcessWire\HookEvent;
+use ProcessWire\WireData;
+	// use ProcessWire\Sanitizer as PwSanitizer;
+
+/**
+ * Adds Hooks for Sanitizer
+ */
+class Sanitizer extends WireData {
+	private static $instance;
+
+	public static function instance() {
+		if (empty(self::$instance)) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	public function addHooks() {
+		$sanitizer = $this->sanitizer;
+		
+		$sanitizer->addHook('yn', function(HookEvent $event) {
+			if (is_bool($event->arguments(0))) {
+				$event->return = $event->arguments(0) ? 'Y' : 'N';
+				return true;
+			}
+			$value = strtoupper($event->arguments(0));
+			$event->return = $value == 'Y' ? 'Y' : 'N';
+		});
+
+		$sanitizer->addHook('ynbool', function(HookEvent $event) {
+			$value = strtoupper($event->arguments(0));
+			$event->return = $value == 'Y';
+		});
+
+		$sanitizer->addHook('stringLength', function(HookEvent $event) {
+			$sanitizer = $event->object;
+			$value  = $event->arguments(0);
+			$length = $event->arguments(1);
+			$event->return = substr($sanitizer->string($value), 0, $length);
+		});
+
+		$sanitizer->addHook('sortColumnForPw', function(HookEvent $event) {
+			$sanitizer = $event->object;
+			$col  = $event->arguments(0);
+			$dir  = $event->arguments(1);
+
+			if ($dir == 'DESC') {
+				$event->return = '-' . $col;
+				return true;
+			}
+			$event->return = $col;
+		});
+		
+		$sanitizer->addHook('phoneUS', function(HookEvent $event) {
+			$sanitizer = $event->object;
+			$value = $event->arguments(0);
+			$phone = preg_replace('^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$^', '$1-$2-$3' , $value);
+			$event->return = $phone;
+		});
+	}
+}

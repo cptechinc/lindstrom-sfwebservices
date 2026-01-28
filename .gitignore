@@ -6,6 +6,7 @@ site/assets
 site/config.php
 /vendor
 test.php
+site/modules/App/vendor
 
 # Twig Cache
 
