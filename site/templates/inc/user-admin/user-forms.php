@@ -69,6 +69,12 @@
 							<label class="custom-control-label" for="api-user">API User</label>
 						</div>
 					</div>
+					<div class="form-group">
+						<div class="custom-control custom-checkbox">
+							<input type="checkbox" class="custom-control-input" name="setItemPrice" id="allowItemPrice" value="Y" <?= $user->has_setPrice() ? 'checked' : '' ; ?>>
+							<label class="custom-control-label" for="allowItemPrice">Allow itemPrice field?</label>
+						</div>
+					</div>
 					<button type="submit" class="btn btn-success">
 						<i class="fa fa-floppy-o"aria-hidden="true"></i> Save
 					</button>

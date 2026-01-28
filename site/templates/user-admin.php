@@ -37,6 +37,12 @@
 			$session->remove('useradmin_response_access_portal');
 		}
 
+		if ($session->useradmin_response_set_price) {
+			$page->body .= render_php("{$config->paths->templates}inc/user-admin/response.php", $args = array('page' => $page, 'config' => $config, 'response' => $session->useradmin_response_set_price));
+			$page->body .= $html->div('class=mb-3');
+			$session->remove('useradmin_response_set_price');
+		}
+
 		if ($input->get->user) {
 			$userID = $input->get->text('user');
 			$edituser = $users->get("name=$userID");

@@ -14,6 +14,7 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 	const ROLE_APIAUTHORIZED = 'api-authorized';
 	const ROLE_APIPRODUCTION = 'api-production';
 	const ROLE_PORTALUSER    = 'portal-user';
+	const ROLE_SETPRICE      = 'set-price';
 
 /* =============================================================
 	CRUD Read Functions
@@ -244,6 +245,7 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 			$this->wire('session')->useradmin_response_production = $this->edit_user_production($user, $input);
 			$this->wire('session')->useradmin_response_access_api = $this->edit_user_access_api($user, $input);
 			$this->wire('session')->useradmin_response_access_portal = $this->edit_user_access_portal($user, $input);
+			$this->wire('session')->useradmin_response_set_price = $this->edit_user_set_price($user, $input);
 			$user->customerNumber = $values->text('customerNumber');
 			$user->customerName   = $values->text('customerName');
 			$user->save();
@@ -299,7 +301,7 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 	 * Add / Remove User access to Portal
 	 * @param  User      $user
 	 * @param  WireInput $input Input Data
-	 * @return void
+	 * @return UserAdminResponse
 	 */
 	public function edit_user_access_portal(User $user, WireInput $input) {
 		$rm = strtolower($input->requestMethod());
@@ -323,6 +325,42 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 				$msg = "User $username Portal access remove";
 			} else {
 				$msg = "Unable to remove Portal access User $username";
+			}
+		}
+		$response->set_success($saved);
+		$response->set_error(!$saved);
+		$response->set_message($msg);
+		return $response;
+	}
+
+	/**
+	 * Add / Remove User access to Portal
+	 * @param  User      $user
+	 * @param  WireInput $input Input Data
+	 * @return UserAdminResponse
+	 */
+	public function edit_user_set_price(User $user, WireInput $input) {
+		$rm = strtolower($input->requestMethod());
+		$values = $input->$rm;
+		$response = new UserAdminResponse();
+		$response->set_action(2);
+		$user->of(false);
+
+		if ($values->text('portal') == 'Y') {
+			$saved = $this->add_role_user($user, self::ROLE_SETPRICE);
+
+			if ($saved) {
+				$msg = "User $user->name has Set Price permission";
+			} else {
+				$msg = "Unable to grant Set Price permission to User $user->name";
+			}
+		} else {
+			$saved = $this->remove_role_user($user, self::ROLE_SETPRICE);
+
+			if ($saved) {
+				$msg = "User $user->name Set Price permission removed";
+			} else {
+				$msg = "Unable to remove Set Price permission from User $user->name";
 			}
 		}
 		$response->set_success($saved);
@@ -511,6 +549,11 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		$this->addHook("User::has_portal", function($event) {
 			$user  = $event->object;
 			$event->return = $user->hasRole(self::ROLE_PORTALUSER);
+		});
+
+		$this->addHook("User::has_setPrice", function($event) {
+			$user  = $event->object;
+			$event->return = $user->hasRole(self::ROLE_SETPRICE);
 		});
 	}
 
