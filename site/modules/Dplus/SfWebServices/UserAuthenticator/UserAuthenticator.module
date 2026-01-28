@@ -59,9 +59,7 @@ class UserAuthenticator extends WireData implements Module {
 			$this->authenticated = $this->authenticate_user($values->text(self::FIELD_USERNAME), $values->text(self::FIELD_PASSWORD));
 		}
 
-		if ($this->authenticated) {
-			$this->log_success($input, $this->wire('user'));
-		}
+		$this->log_success($input, $this->wire('user'));
 
 		if (!$this->authenticated) {
 			$this->message = 'Customer is not authorized';
@@ -126,7 +124,6 @@ class UserAuthenticator extends WireData implements Module {
 			$values->queryString()
 		];
 		$line = implode("|", array_values($record));
-
 		$this->log->save(self::LOG_FILE, $line, ['showURL' => false]);
 	}
 
