@@ -346,7 +346,7 @@ class SfWebServicesUserAdmin extends WireData implements Module {
 		$response->set_action(2);
 		$user->of(false);
 
-		if ($values->text('portal') == 'Y') {
+		if ($values->text('setItemPrice') == 'Y') {
 			$saved = $this->add_role_user($user, self::ROLE_SETPRICE);
 
 			if ($saved) {
