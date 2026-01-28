@@ -8,8 +8,8 @@
 
 	if ($input->$rm->text('IDCLogin')) {
 		if ($input->$rm->offsetExists('debug') === false) {
-		header ("Content-Type:text/xml");
-	}
+			header ("Content-Type:text/xml");
+		}
 		
 		$factory->process($page->service, $input);
 		echo $factory->api['response']->get_xml();
