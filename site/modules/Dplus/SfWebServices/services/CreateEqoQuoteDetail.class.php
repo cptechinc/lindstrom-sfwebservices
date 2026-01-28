@@ -11,6 +11,7 @@ class CreateEqoQuoteDetailRequest extends ServiceRequest {
 		'customerNumber',
 		'quoteNumber',
 		'itemNumber',
+		'itemPrice',
 		'requestQuantity',
 		'requestUOM',
 		'reqShipDate',
@@ -19,6 +20,28 @@ class CreateEqoQuoteDetailRequest extends ServiceRequest {
 	);
 	public $requestdata = array();
 	protected $debug = false;
+
+	/**
+	 * Sets Data Values that will be sent to Dplus
+	 * @param  WireInput $input Input Values
+	 * @return bool
+	 */
+	public function process(WireInput $input) {
+		parent::process($input);
+		$rm = strtolower($input->requestMethod());
+		/**
+		 * @var WireInputData
+		 */
+		$inputData = $input->$rm;
+
+		$this->requestdata['itemPrice'] = $inputData->float('itemPrice');
+
+
+		if ($this->user->hasRole('set-price') === false) {
+			$this->requestdata['itemPrice'] = 0;
+		}
+		return true;
+	}
 }
 
 class CreateEqoQuoteDetailDplus extends ServiceDplus {
@@ -29,6 +52,7 @@ class CreateEqoQuoteDetailDplus extends ServiceDplus {
 		'customerNumber',
 		'quoteNumber',
 		'itemNumber',
+		'itemPrice',
 		'requestQuantity',
 		'requestUOM',
 		'reqShipDate',
